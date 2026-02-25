@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Models\InvoiceIn;
+use App\Models\InvoiceOut;
+use App\Models\Sepatu;
 
 class HomeController extends Controller
 {
@@ -24,7 +27,10 @@ class HomeController extends Controller
      */
     public function index(): View
     {
-        return view('dashboard');
+        $sepatu = Sepatu::all();
+        $invoiceIn = InvoiceIn::count();
+        $invoiceOut = InvoiceOut::count();
+        return view('dashboard', compact('invoiceIn', 'invoiceOut', 'sepatu'));
     }
 
     /**
