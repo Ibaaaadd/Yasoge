@@ -1,11 +1,56 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('content')
-    <div class="app-content pt-3 p-md-3 p-lg-4">
+    <div class="app-content pt-5 p-md-4 p-lg-4 pb-2">
         <div class="container-xl">
-            <h1 class="app-page-title">
-                <div class="mt-5">Dashboard</div>
-            </h1>
+            {{-- ===== WELCOME BANNER ===== --}}
+            @php
+                $user      = auth()->user();
+                $userName  = $user ? $user->name : 'User';
+                $initials  = collect(explode(' ', $userName))
+                                ->take(2)
+                                ->map(fn($w) => strtoupper(substr($w, 0, 1)))
+                                ->implode('');
+                $quotes = [
+                    '"Success is not final, failure is not fatal: it is the courage to continue that counts."',
+                    '"The secret of getting ahead is getting started."',
+                    '"Don\'t watch the clock; do what it does. Keep going."',
+                    '"Great things never come from comfort zones."',
+                ];
+                $quote = $quotes[array_rand($quotes)];
+            @endphp
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="rounded-3 shadow-sm px-4 py-4"
+                         style="background: linear-gradient(135deg, #15a362 0%, #0b7044 100%); color:#fff; overflow:hidden; position:relative;">
+                        <!-- decorative circles -->
+                        <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none;"></div>
+                        <div style="position:absolute;bottom:-50px;right:80px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none;"></div>
+
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h3 class="fw-bold mb-1" style="color:#fff;">
+                                    Selamat Datang, {{ $userName }}! 👋
+                                </h3>
+                                <p class="mb-0" style="color:rgba(255,255,255,.8); font-size:.93rem;">
+                                    Let's do The Work and Have a Nice Day
+                                </p>
+                            </div>
+                            <div class="col-auto text-end d-none d-md-block">
+                                <div class="d-flex flex-column align-items-center gap-3">
+                                    <div style="width:70px;height:70px;border-radius:50%;border:3px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:#fff;background:rgba(255,255,255,.15);">
+                                        {{ $initials }}
+                                    </div>
+                                    <p class="mb-0 fst-italic text-center" style="color:rgba(255,255,255,.75); font-size:.78rem; max-width:220px;">
+                                        {{ $quote }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- ===== END WELCOME BANNER ===== --}}
             <div class="row g-4 mb-4">
                 <div class="col-12 col-lg-4">
                     <div class="app-card app-card-basic d-flex flex-column align-items-start shadow-sm">
@@ -101,6 +146,97 @@
                     </div><!--//app-card-->
                 </div><!--//col-->
             </div><!--//row-->
+
+            {{-- ===== BAR CHART: Transaksi Bulanan ===== --}}
+            <div class="row g-4 mb-4">
+                <div class="col-12">
+                    <div class="app-card app-card-stats-table shadow-sm">
+                        <div class="app-card-header p-3">
+                            <div class="row justify-content-between align-items-center">
+                                <div class="col-auto">
+                                    <h4 class="app-card-title">
+                                        <i class="fa-solid fa-chart-bar me-2 text-primary"></i>
+                                        Grafik Transaksi Bulanan
+                                    </h4>
+                                </div>
+                                <div class="col-auto">
+                                    <form method="GET" action="{{ route('dashboard.index') }}" class="d-flex align-items-center gap-2">
+                                        <label for="yearSelect" class="me-2 mb-0 fw-semibold text-muted small">Tahun:</label>
+                                        <select id="yearSelect" name="year" class="form-select form-select-sm" style="width:auto;" onchange="this.form.submit()">
+                                            @foreach ($years as $yr)
+                                                <option value="{{ $yr }}" {{ $yr == $selectedYear ? 'selected' : '' }}>{{ $yr }}</option>
+                                            @endforeach
+                                        </select>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="app-card-body p-3 p-lg-4">
+                            <canvas id="chart-bar-monthly" height="80"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div><!--//row bar chart-->
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var ctxBar = document.getElementById('chart-bar-monthly').getContext('2d');
+                    new Chart(ctxBar, {
+                        type: 'bar',
+                        data: {
+                            labels: {!! json_encode($months) !!},
+                            datasets: [
+                                {
+                                    label: 'Invoice In',
+                                    data: {!! json_encode($invoiceInMonthly) !!},
+                                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    borderWidth: 1,
+                                    borderRadius: 4
+                                },
+                                {
+                                    label: 'Invoice Out',
+                                    data: {!! json_encode($invoiceOutMonthly) !!},
+                                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    borderWidth: 1,
+                                    borderRadius: 4
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'top' },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.dataset.label + ': Rp ' + context.parsed.y.toLocaleString('id-ID');
+                                        }
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Nominal Transaksi per Bulan – Tahun {{ $selectedYear }}',
+                                    font: { size: 13 }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: { stepSize: 1, precision: 0 },
+                                    title: { display: true, text: 'Nominal (Rp)' }
+                                },
+                                x: {
+                                    title: { display: true, text: 'Bulan' }
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
+            {{-- ===== END BAR CHART ===== --}}
+
             <div class="row g-4 mb-4">
                 <div class="col-12 col-lg-6">
                     <div class="app-card app-card-stats-table h-100 shadow-sm">
@@ -109,10 +245,15 @@
                                 <div class="col-auto">
                                     <h4 class="app-card-title">Invoice Chart</h4>
                                 </div><!--//col-->
-                                <div class="col-auto">
-                                    <div class="card-header-action">
-                                        <a href="#">View report</a>
-                                    </div><!--//card-header-actions-->
+                                <div class="col-auto d-flex align-items-center gap-2">
+                                    <form method="GET" action="{{ route('dashboard.index') }}" class="d-flex align-items-center gap-2">
+                                        <label class="mb-0 fw-semibold text-muted small">Tahun:</label>
+                                        <select name="year" class="form-select form-select-sm" style="width:auto;" onchange="this.form.submit()">
+                                            @foreach ($years as $yr)
+                                                <option value="{{ $yr }}" {{ $yr == $selectedYear ? 'selected' : '' }}>{{ $yr }}</option>
+                                            @endforeach
+                                        </select>
+                                    </form>
                                 </div><!--//col-->
                             </div><!--//row-->
                         </div><!--//app-card-header-->
@@ -135,9 +276,7 @@
                             data: {
                                 labels: ['Invoice In', 'Invoice Out'], // Replace with dynamic labels as needed
                                 datasets: [{
-                                    data: [{{ $invoiceIn }},
-                                        {{ $invoiceOut }}
-                                    ], // Replace with dynamic data as needed
+                                    data: [{{ $invoiceInYear }}, {{ $invoiceOutYear }}],
                                     backgroundColor: [
                                         'rgba(54, 162, 235, 0.2)', // Invoice In (biru)
                                         'rgba(75, 192, 192, 0.2)' // Invoice Out (hijau)
@@ -173,24 +312,7 @@
                             }
                         });
 
-                        // Function to update the chart based on daily data
-                        function updateDailyChart() {
-                            var url = '/get-daily-invoice-data'; // Replace with actual endpoint
-                            fetch(url)
-                                .then(response => response.json())
-                                .then(data => {
-                                    donutChart.data.datasets[0].data = [data.invoiceIn, data
-                                        .invoiceOut
-                                    ]; // Replace with actual data key
-                                    donutChart.update();
-                                })
-                                .catch(error => {
-                                    console.error('Error fetching data:', error);
-                                });
-                        }
 
-                        // Call the updateDailyChart function when the page loads
-                        updateDailyChart();
                     });
                 </script>
 
@@ -267,5 +389,5 @@
 
             </div>
         </div><!--//container-fluid-->
-    </div><!--//app-content-->
+    </div><!--//app-content pb-0-->
 @endsection
