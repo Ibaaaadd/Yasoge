@@ -1,4 +1,4 @@
-@extends('layouts.app') {{-- Sesuaikan dengan layout yang Anda gunakan --}}
+@extends('layouts.app')
 
 @section('content')
     <div class="app-content pt-3 p-md-3 p-lg-4">
@@ -128,7 +128,7 @@
             const quantity = parseInt(jumlahInput.value);
 
             if (!isNaN(unitPrice) && !isNaN(quantity)) {
-                const totalPrice = unitPrice * quantity * 20; // multiply by 20
+                const totalPrice = unitPrice * quantity * 20;
                 hargaInput.value = totalPrice.toFixed();
             } else {
                 hargaInput.value = '';
@@ -141,7 +141,7 @@
             const input = button.closest('.d-flex').querySelector('input[type=number]');
             let value = parseInt(input.value);
             value += delta;
-            if (value < 1) value = 1; // prevent negative or zero quantity
+            if (value < 1) value = 1;
             input.value = value;
             updatePrice(input);
         }

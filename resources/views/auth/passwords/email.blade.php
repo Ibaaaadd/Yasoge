@@ -1,47 +1,103 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
 
-@section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Reset Password') }}</div>
+<head>
+    <title>YASOGE - Lupa Password</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script defer src="{{ asset('assets/plugins/fontawesome/js/all.min.js') }}"></script>
+    <link id="theme-style" rel="stylesheet" href="{{ asset('assets/css/portal.css') }}">
+</head>
 
-                <div class="card-body">
+<body class="app app-login p-0">
+    <div class="row g-0 app-auth-wrapper">
+        <div class="col-12 col-md-7 col-lg-6 auth-main-col text-center p-5">
+            <div class="d-flex flex-column align-content-end">
+                <div class="app-auth-body mx-auto">
+                    <div class="app-auth-branding mb-4">
+                        <a class="app-logo" href="{{ route('login') }}">
+                            <img class="logo-icon me-2" src="{{ asset('logo/Yasoge.png') }}" alt="logo">
+                        </a>
+                    </div>
+                    <h1 class="auth-heading text-center mb-3">
+                        <div class="fw-bold">Lupa Password</div>
+                    </h1>
+                    <p class="text-muted mb-4">Masukkan email Anda dan kami akan mengirimkan link untuk reset password.</p>
+
                     @if (session('status'))
-                        <div class="alert alert-success" role="alert">
+                        <div class="alert alert-success d-flex align-items-center mb-3" role="alert">
+                            <i class="fa-solid fa-circle-check me-2"></i>
                             {{ session('status') }}
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('password.email') }}">
-                        @csrf
-
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-
+                    <div class="auth-form-container text-start">
+                        <form method="POST" action="{{ route('password.email') }}" class="auth-form">
+                            @csrf
+                            <div class="email mb-3">
+                                <label class="sr-only" for="email">Email</label>
+                                <input id="email" name="email" type="email"
+                                    class="form-control @error('email') is-invalid @enderror"
+                                    placeholder="Email address" required value="{{ old('email') }}"
+                                    autocomplete="email" autofocus>
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
+                                        <i class="fa-solid fa-circle-exclamation me-1"></i>{{ $message }}
                                     </span>
                                 @enderror
                             </div>
-                        </div>
 
-                        <div class="row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Send Password Reset Link') }}
+                            <div class="text-center mb-3">
+                                <button type="submit" class="btn app-btn-primary w-100 theme-btn mx-auto">
+                                    <i class="fa-solid fa-paper-plane me-2"></i>Kirim Link Reset Password
                                 </button>
                             </div>
-                        </div>
-                    </form>
+
+                            <div class="text-center">
+                                <a href="{{ route('login') }}" class="btn btn-link text-muted">
+                                    <i class="fa-solid fa-arrow-left me-1"></i>Kembali ke Login
+                                </a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
+
+                <footer class="app-auth-footer">
+                    <div class="container text-center py-3 mt-5">
+                        <small class="copyright">Created
+                            <img src="{{ asset('logo/Yasoge.png') }}" alt="Yasoge logo"
+                                style="width: 20px; height: auto; color: #fb866a;">
+                            by Yasoge @2024
+                        </small>
+                    </div>
+                </footer>
             </div>
         </div>
+        <div class="col-12 col-md-5 col-lg-6 h-100 auth-background-col">
+            <div class="image-container">
+                <img src="{{ asset('logo/Yasoge Walpaper.jpg') }}" alt="">
+            </div>
+            <div class="auth-background-mask"></div>
+        </div>
     </div>
-</div>
-@endsection
+</body>
+
+<style>
+    .auth-background-col {
+        position: relative;
+        overflow: hidden;
+    }
+    .image-container {
+        height: 100%;
+        width: 100%;
+    }
+    .image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+</style>
+
+</html>

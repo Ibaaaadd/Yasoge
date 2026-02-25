@@ -19,6 +19,9 @@
     <!-- App CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/portal.css">
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 
 <body class="app app-login p-0">
@@ -43,13 +46,9 @@
                                     autocomplete="email" autofocus>
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
+                                        <i class="fa-solid fa-circle-exclamation me-1"></i>{{ $message }}
                                     </span>
                                 @enderror
-                                <!-- Tambahkan pesan kesalahan di bawah input email -->
-                                @if ($errors->has('email'))
-                                    <span class="text-danger">{{ $errors->first('email') }}</span>
-                                @endif
                             </div><!--//form-group-->
                             <div class="password mb-3">
                                 <label class="sr-only" for="password">Password</label>
@@ -58,13 +57,9 @@
                                     required="required" autocomplete="current-password">
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
+                                        <i class="fa-solid fa-circle-exclamation me-1"></i>{{ $message }}
                                     </span>
                                 @enderror
-                                <!-- Tambahkan pesan kesalahan di bawah input password -->
-                                @if ($errors->has('password'))
-                                    <span class="text-danger">{{ $errors->first('password') }}</span>
-                                @endif
                                 <div class="extra mt-3 row justify-content-between">
                                     <div class="col-6">
                                         <div class="form-check">
@@ -113,6 +108,33 @@
         </div><!--//auth-background-col-->
 
     </div><!--//row-->
+
+    @if ($errors->has('email'))
+    <script>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: '{{ addslashes($errors->first('email')) }}',
+            showConfirmButton: false,
+            timer: 4000,
+            timerProgressBar: true,
+        });
+    </script>
+    @elseif ($errors->has('password'))
+    <script>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: '{{ addslashes($errors->first('password')) }}',
+            showConfirmButton: false,
+            timer: 4000,
+            timerProgressBar: true,
+        });
+    </script>
+    @endif
+
 </body>
 <style>
     .auth-background-col {

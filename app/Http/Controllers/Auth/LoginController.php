@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class LoginController extends Controller
 {
@@ -47,20 +48,30 @@ class LoginController extends Controller
      */
     public function login(Request $request)
     {
-        $input = $request->all();
-
         $this->validate($request, [
-            'email' => 'required|email',
+            'email'    => 'required|email',
             'password' => 'required',
         ]);
 
-        if (Auth::attempt(['email' => $input['email'], 'password' => $input['password']])) {
-            // Authentication passed...
-            return redirect()->route('dashboard.index');
-        } else {
+        // Cek apakah email terdaftar
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
             return redirect()->route('login')
-                ->with('error', 'Email-Address And Password Are Wrong.');
+                ->withErrors(['email' => 'Email belum terdaftar. Silakan periksa kembali.'])
+                ->withInput($request->only('email'));
         }
+
+        // Email ada, coba login
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->boolean('remember'))) {
+            $request->session()->regenerate();
+            return redirect()->route('dashboard.index');
+        }
+
+        // Email ada tapi password salah
+        return redirect()->route('login')
+            ->withErrors(['password' => 'Password yang Anda masukkan salah.'])
+            ->withInput($request->only('email'));
     }
 
     /**
