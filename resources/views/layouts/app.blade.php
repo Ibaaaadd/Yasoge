@@ -60,16 +60,25 @@
                             <div class="app-utility-item app-user-dropdown dropdown">
                                 <a class="dropdown-toggle" id="user-dropdown-toggle" data-bs-toggle="dropdown"
                                     href="#" role="button" aria-expanded="false">
-                                    <img src="{{ asset('assets/images/user.png') }}" alt="user profile">
+                                    @if(Auth::user()->photo)
+                                        <img src="{{ asset('foto/' . Auth::user()->photo) }}" alt="user profile" 
+                                             style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;">
+                                    @else
+                                        <img src="{{ asset('assets/images/user.png') }}" alt="user profile">
+                                    @endif
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="user-dropdown-toggle">
                                     <li>
                                         <a class="dropdown-item">
                                             <div class="">{{ Auth::user()->name }}</div>
                                         </a>
+                                        <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                                            <i class="fas fa-user-edit me-1"></i> Edit Profile
+                                        </a>
+                                        <hr class="dropdown-divider">
                                         <a class="dropdown-item" href="#"
                                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                            Log Out
+                                            <i class="fas fa-sign-out-alt me-1"></i> Log Out
                                         </a>
                                         <form id="logout-form" action="{{ route('logout') }}" method="POST"
                                             style="display: none;">

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\SepatuController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceInController;
@@ -38,6 +39,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::delete('/invoiceout/{id}', [InvoiceOutController::class, 'destroy'])->name('invoiceOut.destroy');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile.edit');
+    Route::post('/profile', [UserController::class, 'updateProfile'])->name('profile.update');
 
     Route::get('/sepatu', [SepatuController::class, 'index'])->name('sepatu.index');
     Route::post('/sepatu', [SepatuController::class, 'store'])->name('sepatu.store');

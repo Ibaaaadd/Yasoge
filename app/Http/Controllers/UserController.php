@@ -16,7 +16,6 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi data input
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -24,7 +23,6 @@ class UserController extends Controller
             'type' => 'required|integer|in:0,1,2',
         ]);
 
-        // Buat user baru
         $user = User::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
@@ -32,7 +30,6 @@ class UserController extends Controller
             'type' => $request->input('type'),
         ]);
 
-        // Redirect atau respons lain yang diperlukan
         return redirect()->back()->with('success', 'User berhasil dibuat.');
     }
 
@@ -68,5 +65,45 @@ class UserController extends Controller
             ->get();
 
         return view('users.index', compact('users'));
+    }
+
+    public function profile(Request $request)
+    {
+        $user = $request->user();
+        return view('profile.edit', compact('user'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:8|confirmed',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user->name = $validatedData['name'];
+        $user->email = $validatedData['email'];
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($validatedData['password']);
+        }
+
+        if ($request->hasFile('photo')) {
+            if ($user->photo && file_exists(public_path('foto/' . $user->photo))) {
+                unlink(public_path('foto/' . $user->photo));
+            }
+
+            $file = $request->file('photo');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('foto'), $filename);
+            $user->photo = $filename;
+        }
+
+        $user->save();
+
+        return redirect()->route('profile.edit')->with('success', 'Profile berhasil diperbarui!');
     }
 }
