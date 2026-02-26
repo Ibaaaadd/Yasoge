@@ -53,7 +53,6 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-        // Cek apakah email terdaftar
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
@@ -62,13 +61,11 @@ class LoginController extends Controller
                 ->withInput($request->only('email'));
         }
 
-        // Email ada, coba login
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->boolean('remember'))) {
             $request->session()->regenerate();
             return redirect()->route('dashboard.index');
         }
 
-        // Email ada tapi password salah
         return redirect()->route('login')
             ->withErrors(['password' => 'Password yang Anda masukkan salah.'])
             ->withInput($request->only('email'));
@@ -86,6 +83,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login'); // Ganti dengan route login Anda
+        return redirect('/login'); 
     }
 }

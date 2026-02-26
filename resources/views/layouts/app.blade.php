@@ -143,9 +143,9 @@
                         </li><!--//nav-item-->
                         <li class="nav-item has-submenu">
                             <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
-                            <a class="nav-link submenu-toggle {{ request()->routeIs('invoiceIn.index') || request()->routeIs('invoiceOut.index') ? 'active' : '' }}"
-                                href="{{ route('invoiceIn.index') }}" data-bs-toggle="collapse"
-                                data-bs-target="#submenu-1" aria-expanded="false" aria-controls="submenu-1 ">
+                            <a class="nav-link submenu-toggle {{ request()->routeIs('invoiceIn.*') || request()->routeIs('invoiceOut.*') ? 'active' : '' }}"
+                                href="#submenu-1" data-bs-toggle="collapse"
+                                data-bs-target="#submenu-1" aria-expanded="{{ request()->routeIs('invoiceIn.*') || request()->routeIs('invoiceOut.*') ? 'true' : 'false' }}" aria-controls="submenu-1">
                                 <span class="nav-icon">
                                     <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
                                     <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-files"
@@ -169,7 +169,7 @@
                                     </svg>
                                 </span><!--//submenu-arrow-->
                             </a><!--//nav-link-->
-                            <div id="submenu-1" class="collapse submenu submenu-1" data-bs-parent="#menu-accordion">
+                            <div id="submenu-1" class="collapse submenu submenu-1 {{ request()->routeIs('invoiceIn.*') || request()->routeIs('invoiceOut.*') ? 'show' : '' }}" data-bs-parent="#menu-accordion">
                                 <ul class="submenu-list list-unstyled">
                                     <li class="submenu-item"><a
                                             class="submenu-link {{ request()->routeIs('invoiceIn.index') ? 'active' : '' }}"
