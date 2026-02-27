@@ -120,13 +120,13 @@
                                                 <tr class="item-row">
                                                     <td>
                                                         <select name="items[{{ $index }}][sepatu_id]"
-                                                            class="form-control inv-control sepatu-select" required
-                                                            onchange="updatePrice(this)">
+                                                            class="form-control inv-control sepatu-select" required>
+                                                            <option value="">Pilih item...</option>
                                                             @foreach ($sepatuItems as $sepatu)
                                                                 <option value="{{ $sepatu->id }}"
                                                                     data-price="{{ $sepatu->harga }}"
                                                                     {{ $item->sepatu_id == $sepatu->id ? 'selected' : '' }}>
-                                                                    {{ $sepatu->kode }}
+                                                                    {{ $sepatu->kode }} (Stok: {{ $sepatu->current_stock ?? 0 }})
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -198,76 +198,118 @@
     <script>
         let itemCount = {{ count($invoiceIn->items) }};
 
+        const sepatuData = {
+            @foreach ($sepatuItems as $sepatu)
+            {{ $sepatu->id }}: { price: {{ $sepatu->harga }}, stock: {{ $sepatu->current_stock ?? 0 }}, kode: "{{ addslashes($sepatu->kode) }}" },
+            @endforeach
+        };
+
+        const s2Config = {
+            placeholder: 'Pilih item...', allowClear: true, width: '100%',
+            language: { noResults: function() { return 'Tidak ada hasil'; }, searching: function() { return 'Mencari...'; } }
+        };
+
+        function getUsedIds(excludeRow) {
+            const ids = [];
+            document.querySelectorAll('.item-row').forEach(row => {
+                if (row !== excludeRow) {
+                    const sel = row.querySelector('.sepatu-select');
+                    if (sel && sel.value) ids.push(parseInt(sel.value));
+                }
+            });
+            return ids;
+        }
+
+        function rebuildDropdown(row) {
+            const $sel    = $(row).find('.sepatu-select');
+            const curVal  = parseInt($sel.val()) || 0;
+            const usedIds = getUsedIds(row);
+            let html = '';
+            Object.entries(sepatuData).forEach(([id, d]) => {
+                const iid = parseInt(id);
+                if (usedIds.includes(iid)) return;
+                html += `<option value="${iid}" data-price="${d.price}" data-stock="${d.stock}">${d.kode} (Stok: ${d.stock})</option>`;
+            });
+            try { $sel.select2('destroy'); } catch(e) {}
+            $sel[0].innerHTML = '<option value="">Pilih item...</option>' + html;
+            if (curVal && !usedIds.includes(curVal)) $sel.val(curVal);
+            $sel.select2(s2Config);
+        }
+
+        function refreshAllDropdowns() {
+            document.querySelectorAll('.item-row').forEach(row => rebuildDropdown(row));
+        }
+
         function updatePrice(element) {
-            const itemRow = element.closest('.item-row');
-            const select = itemRow.querySelector('.sepatu-select');
-            const jumlahInput = itemRow.querySelector('.jumlah-input');
-            const hargaInput = itemRow.querySelector('.harga-input');
-            const selectedOption = select.options[select.selectedIndex];
-            const unitPrice = parseFloat(selectedOption.getAttribute('data-price'));
-            const quantity = parseInt(jumlahInput.value);
-            if (!isNaN(unitPrice) && !isNaN(quantity)) {
-                hargaInput.value = (unitPrice * quantity * 20).toFixed();
-            } else {
-                hargaInput.value = '';
-            }
+            const row  = element.closest('.item-row');
+            const sel  = row.querySelector('.sepatu-select');
+            const opt  = sel ? sel.options[sel.selectedIndex] : null;
+            const unit = opt ? parseFloat(opt.getAttribute('data-price')) : NaN;
+            const qty  = parseInt(row.querySelector('.jumlah-input').value);
+            row.querySelector('.harga-input').value = (!isNaN(unit) && !isNaN(qty)) ? (unit * qty * 20).toFixed() : '';
             updateTotalPrice();
         }
 
         function changeQuantity(button, delta) {
             const input = button.closest('.qty-wrap').querySelector('input[type=number]');
-            let value = parseInt(input.value);
-            value += delta;
-            if (value < 1) value = 1;
-            input.value = value;
+            let v = parseInt(input.value) + delta;
+            if (v < 1) v = 1;
+            input.value = v;
             updatePrice(input);
         }
 
         function removeItem(button) {
-            button.closest('.item-row').remove();
+            const row = button.closest('.item-row');
+            try { $(row).find('.sepatu-select').select2('destroy'); } catch(e) {}
+            row.remove();
+            refreshAllDropdowns();
             updateTotalPrice();
         }
 
         function addItemRow() {
-            const itemContainer = document.getElementById('items-container');
-            const newItemRow = document.createElement('tr');
-            newItemRow.classList.add('item-row');
-            newItemRow.innerHTML = `
+            const idx = itemCount++;
+            const container = document.getElementById('items-container');
+            const row = document.createElement('tr');
+            row.classList.add('item-row');
+            row.innerHTML = `
                 <td>
-                    <select name="items[${itemCount}][sepatu_id]" class="form-control inv-control sepatu-select" required onchange="updatePrice(this)">
-                        @foreach ($sepatuItems as $sepatu)
-                            <option value="{{ $sepatu->id }}" data-price="{{ $sepatu->harga }}">{{ $sepatu->kode }}</option>
-                        @endforeach
-                    </select>
+                    <select name="items[${idx}][sepatu_id]" class="form-control inv-control sepatu-select" required></select>
                 </td>
                 <td>
                     <div class="qty-wrap mx-auto">
-                        <button class="qty-btn" type="button" onclick="changeQuantity(this, -1)"><i class="fas fa-minus" style="font-size:.65rem;"></i></button>
-                        <input type="number" name="items[${itemCount}][jumlah]" class="jumlah-input" min="1" value="1" required oninput="updatePrice(this)" />
-                        <button class="qty-btn" type="button" onclick="changeQuantity(this, 1)"><i class="fas fa-plus" style="font-size:.65rem;"></i></button>
+                        <button class="qty-btn" type="button" onclick="changeQuantity(this,-1)"><i class="fas fa-minus" style="font-size:.65rem;"></i></button>
+                        <input type="number" name="items[${idx}][jumlah]" class="jumlah-input" min="1" value="1" required oninput="updatePrice(this)" />
+                        <button class="qty-btn" type="button" onclick="changeQuantity(this,1)"><i class="fas fa-plus" style="font-size:.65rem;"></i></button>
                     </div>
                 </td>
                 <td>
-                    <input type="number" name="items[${itemCount}][harga]" class="harga-field harga-input" required placeholder="0" readonly />
+                    <input type="number" name="items[${idx}][harga]" class="harga-field harga-input" required placeholder="0" readonly />
                 </td>
                 <td class="text-center">
                     <button type="button" class="btn-del-row btn" onclick="removeItem(this)"><i class="fas fa-trash-alt" style="font-size:.72rem;"></i></button>
                 </td>
             `;
-            itemContainer.appendChild(newItemRow);
-            itemCount++;
+            container.appendChild(row);
+            rebuildDropdown(row);
         }
 
         function updateTotalPrice() {
-            let totalPrice = 0;
+            let total = 0;
             document.querySelectorAll('.item-row').forEach(row => {
-                const harga = parseFloat(row.querySelector('.harga-input').value);
-                if (!isNaN(harga)) totalPrice += harga;
+                const v = parseFloat(row.querySelector('.harga-input').value);
+                if (!isNaN(v)) total += v;
             });
-            document.getElementById('total-price').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(totalPrice);
-            document.getElementById('totali').value = totalPrice;
+            document.getElementById('total-price').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(total);
+            document.getElementById('totali').value = total;
         }
 
-        document.addEventListener('DOMContentLoaded', updateTotalPrice);
+        document.addEventListener('DOMContentLoaded', function () {
+            $(document).on('change', '.sepatu-select', function() {
+                refreshAllDropdowns();
+                updatePrice(this);
+            });
+            refreshAllDropdowns();
+            document.querySelectorAll('.item-row').forEach(row => updatePrice(row.querySelector('.sepatu-select')));
+        });
     </script>
 @endsection

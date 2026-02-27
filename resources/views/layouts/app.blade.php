@@ -15,6 +15,15 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+    <style>
+        .select2-container--default .select2-selection--single { border: 1.5px solid #dee2e6 !important; border-radius: 8px !important; height: auto !important; padding: .42rem .8rem !important; font-size: .93rem !important; }
+        .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 1.5 !important; padding-left: 0 !important; color: #212529; }
+        .select2-container--default .select2-selection--single .select2-selection__arrow { height: 100% !important; }
+        .select2-dropdown { border: 1.5px solid #dee2e6; border-radius: 8px; }
+        .select2-container--default .select2-search--dropdown .select2-search__field { border: 1.5px solid #dee2e6; border-radius: 6px; padding: .38rem .7rem; }
+        .select2-container--default .select2-results__option--highlighted[aria-selected] { background-color: #495057; }
+    </style>
 
     <!-- Penulisan skrip SweetAlert versi terbaru dari CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2"></script>
@@ -183,6 +192,19 @@
                         </li><!--//nav-item-->
 
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('inventory.index') ? 'active' : '' }}"
+                                href="{{ route('inventory.index') }}">
+                                <span class="nav-icon">
+                                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-archive"
+                                        fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V2zm1 3v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5H1zm3 2a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 7z"/>
+                                    </svg>
+                                </span>
+                                <span class="nav-link-text">Inventory</span>
+                            </a>
+                        </li><!--//nav-item-->
+
+                        <li class="nav-item">
                             <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
                             <a class="nav-link nav-link {{ request()->routeIs('users.index') ? 'active' : '' }}"
                                 href="{{ route('users.index') }}">
@@ -274,6 +296,8 @@
 
     <!-- Include jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <!-- Letakkan di bagian bawah sebelum penutup tag </body> -->
 

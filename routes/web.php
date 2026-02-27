@@ -6,6 +6,7 @@ use App\Http\Controllers\SepatuController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceInController;
 use App\Http\Controllers\InvoiceOutController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 
@@ -37,6 +38,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/invoiceout/{id}/edit', [InvoiceOutController::class, 'edit'])->name('invoiceOut.edit');
     Route::put('/invoiceout/{id}', [InvoiceOutController::class, 'update'])->name('invoiceOut.update');
     Route::delete('/invoiceout/{id}', [InvoiceOutController::class, 'destroy'])->name('invoiceOut.destroy');
+
+    Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 

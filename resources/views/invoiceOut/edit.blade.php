@@ -109,10 +109,10 @@
                                     <table class="table inv-table">
                                         <thead>
                                             <tr>
-                                                <th style="width:42%">Sepatu</th>
+                                                <th style="width:38%">Sepatu &amp; Stok</th>
                                                 <th class="text-center" style="width:24%">Jumlah</th>
                                                 <th class="text-center" style="width:26%">Harga (Rp)</th>
-                                                <th class="text-center" style="width:8%"></th>
+                                                <th class="text-center" style="width:12%"></th>
                                             </tr>
                                         </thead>
                                         <tbody id="items-container">
@@ -120,16 +120,19 @@
                                                 <tr class="item-row">
                                                     <td>
                                                         <select name="items[{{ $index }}][sepatu_id]"
-                                                            class="form-control inv-control sepatu-select" required
-                                                            onchange="updatePrice(this)">
+                                                            class="form-control inv-control sepatu-select" required>
+                                                            <option value="">Pilih item...</option>
                                                             @foreach ($sepatuItems as $sepatu)
                                                                 <option value="{{ $sepatu->id }}"
                                                                     data-price="{{ $sepatu->harga }}"
-                                                                    {{ $item->sepatu_id == $sepatu->id ? 'selected' : '' }}>
-                                                                    {{ $sepatu->kode }}
+                                                                    data-stock="{{ $sepatu->current_stock }}"
+                                                                    {{ $item->sepatu_id == $sepatu->id ? 'selected' : '' }}
+                                                                    {{ ($sepatu->current_stock <= 0 && $item->sepatu_id != $sepatu->id) ? 'disabled' : '' }}>
+                                                                    {{ $sepatu->kode }} (Stok: {{ $sepatu->current_stock }})
                                                                 </option>
                                                             @endforeach
                                                         </select>
+                                                        <small class="stock-info mt-1 d-block"></small>
                                                     </td>
                                                     <td>
                                                         <div class="qty-wrap mx-auto">
@@ -198,76 +201,144 @@
     <script>
         let itemCount = {{ count($invoiceOut->items) }};
 
-        function updatePrice(element) {
-            const itemRow = element.closest('.item-row');
-            const select = itemRow.querySelector('.sepatu-select');
-            const jumlahInput = itemRow.querySelector('.jumlah-input');
-            const hargaInput = itemRow.querySelector('.harga-input');
-            const selectedOption = select.options[select.selectedIndex];
-            const unitPrice = parseFloat(selectedOption.getAttribute('data-price'));
-            const quantity = parseInt(jumlahInput.value);
-            if (!isNaN(unitPrice) && !isNaN(quantity)) {
-                hargaInput.value = (unitPrice * quantity * 20).toFixed();
-            } else {
-                hargaInput.value = '';
+        const sepatuData = {
+            @foreach ($sepatuItems as $sepatu)
+            {{ $sepatu->id }}: { price: {{ $sepatu->harga }}, stock: {{ $sepatu->current_stock }}, kode: "{{ addslashes($sepatu->kode) }}" },
+            @endforeach
+        };
+
+        const s2Config = {
+            placeholder: 'Pilih item...', allowClear: true, width: '100%',
+            language: { noResults: function() { return 'Tidak ada hasil'; }, searching: function() { return 'Mencari...'; } }
+        };
+
+        function getUsedIds(excludeRow) {
+            const ids = [];
+            document.querySelectorAll('.item-row').forEach(row => {
+                if (row !== excludeRow) {
+                    const sel = row.querySelector('.sepatu-select');
+                    if (sel && sel.value) ids.push(parseInt(sel.value));
+                }
+            });
+            return ids;
+        }
+
+        function rebuildDropdown(row) {
+            const $sel    = $(row).find('.sepatu-select');
+            const curVal  = parseInt($sel.val()) || 0;
+            const usedIds = getUsedIds(row);
+            let html = '';
+            Object.entries(sepatuData).forEach(([id, d]) => {
+                const iid = parseInt(id);
+                if (usedIds.includes(iid)) return;
+                if (d.stock <= 0 && iid !== curVal) return;
+                const txt = d.stock > 0 ? `${d.kode} (Stok: ${d.stock})` : `${d.kode} (Habis)`;
+                html += `<option value="${iid}" data-price="${d.price}" data-stock="${d.stock}">${txt}</option>`;
+            });
+            try { $sel.select2('destroy'); } catch(e) {}
+            $sel[0].innerHTML = '<option value="">Pilih item...</option>' + html;
+            if (curVal && !usedIds.includes(curVal)) $sel.val(curVal);
+            $sel.select2(s2Config);
+        }
+
+        function refreshAllDropdowns() {
+            document.querySelectorAll('.item-row').forEach(row => rebuildDropdown(row));
+        }
+
+        function updateStockBadge(row) {
+            const sel     = row.querySelector('.sepatu-select');
+            const opt     = sel ? sel.options[sel.selectedIndex] : null;
+            const badge   = row.querySelector('.stock-info');
+            const jiInput = row.querySelector('.jumlah-input');
+            if (!opt || !opt.value) return;
+            const stock = parseInt(opt.getAttribute('data-stock')) || 0;
+            if (jiInput) {
+                jiInput.max = stock;
+                if (parseInt(jiInput.value) > stock && stock > 0) jiInput.value = stock;
             }
+            if (badge) {
+                if (stock > 10)     badge.innerHTML = `<span style="background:#c3e6cb;color:#155724;padding:.2em .6em;border-radius:6px;font-size:.75rem;font-weight:600;"><i class="fas fa-boxes me-1"></i>Stok: ${stock}</span>`;
+                else if (stock > 0) badge.innerHTML = `<span style="background:#fff3cd;color:#856404;padding:.2em .6em;border-radius:6px;font-size:.75rem;font-weight:600;"><i class="fas fa-exclamation-triangle me-1"></i>Stok: ${stock} (hampir habis)</span>`;
+                else                badge.innerHTML = `<span style="background:#f8d7da;color:#721c24;padding:.2em .6em;border-radius:6px;font-size:.75rem;font-weight:600;"><i class="fas fa-times-circle me-1"></i>Stok Kosong</span>`;
+            }
+        }
+
+        function updatePrice(element) {
+            const row  = element.closest('.item-row');
+            const sel  = row.querySelector('.sepatu-select');
+            const opt  = sel ? sel.options[sel.selectedIndex] : null;
+            const unit = opt ? parseFloat(opt.getAttribute('data-price')) : NaN;
+            const qty  = parseInt(row.querySelector('.jumlah-input').value);
+            row.querySelector('.harga-input').value = (!isNaN(unit) && !isNaN(qty)) ? (unit * qty * 20).toFixed() : '';
             updateTotalPrice();
         }
 
         function changeQuantity(button, delta) {
             const input = button.closest('.qty-wrap').querySelector('input[type=number]');
-            let value = parseInt(input.value);
-            value += delta;
-            if (value < 1) value = 1;
-            input.value = value;
+            let v = parseInt(input.value) + delta;
+            const mx = parseInt(input.max) || 99999;
+            if (v < 1) v = 1; if (v > mx) v = mx;
+            input.value = v;
             updatePrice(input);
         }
 
         function removeItem(button) {
-            button.closest('.item-row').remove();
+            const row = button.closest('.item-row');
+            try { $(row).find('.sepatu-select').select2('destroy'); } catch(e) {}
+            row.remove();
+            refreshAllDropdowns();
             updateTotalPrice();
         }
 
         function addItemRow() {
-            const itemContainer = document.getElementById('items-container');
-            const newItemRow = document.createElement('tr');
-            newItemRow.classList.add('item-row');
-            newItemRow.innerHTML = `
+            const idx = itemCount++;
+            const container = document.getElementById('items-container');
+            const row = document.createElement('tr');
+            row.classList.add('item-row');
+            row.innerHTML = `
                 <td>
-                    <select name="items[${itemCount}][sepatu_id]" class="form-control inv-control sepatu-select" required onchange="updatePrice(this)">
-                        @foreach ($sepatuItems as $sepatu)
-                            <option value="{{ $sepatu->id }}" data-price="{{ $sepatu->harga }}">{{ $sepatu->kode }}</option>
-                        @endforeach
-                    </select>
+                    <select name="items[${idx}][sepatu_id]" class="form-control inv-control sepatu-select" required></select>
+                    <small class="stock-info mt-1 d-block"></small>
                 </td>
                 <td>
                     <div class="qty-wrap mx-auto">
-                        <button class="qty-btn" type="button" onclick="changeQuantity(this, -1)"><i class="fas fa-minus" style="font-size:.65rem;"></i></button>
-                        <input type="number" name="items[${itemCount}][jumlah]" class="jumlah-input" min="1" value="1" required oninput="updatePrice(this)" />
-                        <button class="qty-btn" type="button" onclick="changeQuantity(this, 1)"><i class="fas fa-plus" style="font-size:.65rem;"></i></button>
+                        <button class="qty-btn" type="button" onclick="changeQuantity(this,-1)"><i class="fas fa-minus" style="font-size:.65rem;"></i></button>
+                        <input type="number" name="items[${idx}][jumlah]" class="jumlah-input" min="1" value="1" required oninput="updatePrice(this)" />
+                        <button class="qty-btn" type="button" onclick="changeQuantity(this,1)"><i class="fas fa-plus" style="font-size:.65rem;"></i></button>
                     </div>
                 </td>
                 <td>
-                    <input type="number" name="items[${itemCount}][harga]" class="harga-field harga-input" required placeholder="0" readonly />
+                    <input type="number" name="items[${idx}][harga]" class="harga-field harga-input" required placeholder="0" readonly />
                 </td>
                 <td class="text-center">
                     <button type="button" class="btn-del-row btn" onclick="removeItem(this)"><i class="fas fa-trash-alt" style="font-size:.72rem;"></i></button>
                 </td>
             `;
-            itemContainer.appendChild(newItemRow);
-            itemCount++;
+            container.appendChild(row);
+            rebuildDropdown(row);
         }
 
         function updateTotalPrice() {
-            let totalPrice = 0;
+            let total = 0;
             document.querySelectorAll('.item-row').forEach(row => {
-                const harga = parseFloat(row.querySelector('.harga-input').value);
-                if (!isNaN(harga)) totalPrice += harga;
+                const v = parseFloat(row.querySelector('.harga-input').value);
+                if (!isNaN(v)) total += v;
             });
-            document.getElementById('total-price').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(totalPrice);
-            document.getElementById('totali').value = totalPrice;
+            document.getElementById('total-price').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(total);
+            document.getElementById('totali').value = total;
         }
 
-        document.addEventListener('DOMContentLoaded', updateTotalPrice);
+        document.addEventListener('DOMContentLoaded', function () {
+            $(document).on('change', '.sepatu-select', function() {
+                refreshAllDropdowns();
+                updateStockBadge(this.closest('.item-row'));
+                updatePrice(this);
+            });
+            refreshAllDropdowns();
+            document.querySelectorAll('.item-row').forEach(row => {
+                updateStockBadge(row);
+                updatePrice(row.querySelector('.sepatu-select'));
+            });
+        });
     </script>
 @endsection

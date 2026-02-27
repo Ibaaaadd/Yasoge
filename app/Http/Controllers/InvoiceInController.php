@@ -6,7 +6,9 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\InvoiceIn;
 use App\Models\InvoiceInItem;
+use App\Models\InvoiceOutItem;
 use App\Models\Sepatu;
+use Illuminate\Support\Facades\DB;
 
 class InvoiceInController extends Controller
 {
@@ -16,9 +18,24 @@ class InvoiceInController extends Controller
         return view('invoiceIn.index', compact('invoiceIn'));
     }
 
+    private function getStockMap(): array
+    {
+        $stockIn  = InvoiceInItem::select('sepatu_id', DB::raw('SUM(jumlah) as total'))->groupBy('sepatu_id')->pluck('total', 'sepatu_id');
+        $stockOut = InvoiceOutItem::select('sepatu_id', DB::raw('SUM(jumlah) as total'))->groupBy('sepatu_id')->pluck('total', 'sepatu_id');
+        $map = [];
+        foreach (Sepatu::pluck('id') as $id) {
+            $map[$id] = ($stockIn[$id] ?? 0) - ($stockOut[$id] ?? 0);
+        }
+        return $map;
+    }
+
     public function create()
     {
-        $sepatuItems = Sepatu::all(); // Ambil semua data sepatu dari model Sepatu
+        $stockMap    = $this->getStockMap();
+        $sepatuItems = Sepatu::all()->map(function ($s) use ($stockMap) {
+            $s->current_stock = $stockMap[$s->id] ?? 0;
+            return $s;
+        });
         return view('invoiceIn.create', compact('sepatuItems'));
     }
 
@@ -56,8 +73,12 @@ class InvoiceInController extends Controller
 
     public function edit($id)
     {
-        $invoiceIn = InvoiceIn::findOrFail($id);
-        $sepatuItems = Sepatu::all(); // Asumsi semua item sepatu diambil
+        $invoiceIn   = InvoiceIn::findOrFail($id);
+        $stockMap    = $this->getStockMap();
+        $sepatuItems = Sepatu::all()->map(function ($s) use ($stockMap) {
+            $s->current_stock = $stockMap[$s->id] ?? 0;
+            return $s;
+        });
         return view('invoiceIn.edit', compact('invoiceIn', 'sepatuItems'));
     }
 
