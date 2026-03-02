@@ -10,9 +10,6 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 
-
-
-
 Route::get('/', function () {
     return view('Auth/login');
 });

@@ -172,7 +172,21 @@
                             </div>
                         </div>
                         <div class="app-card-body p-3 p-lg-4">
-                            <canvas id="chart-bar-monthly" height="80"></canvas>
+                            <style>
+                                .chart-bar-wrap {
+                                    position: relative;
+                                    width: 100%;
+                                    height: 320px;
+                                }
+                                @media (max-width: 767px) {
+                                    .chart-bar-wrap {
+                                        height: 240px;
+                                    }
+                                }
+                            </style>
+                            <div class="chart-bar-wrap">
+                                <canvas id="chart-bar-monthly"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -180,16 +194,29 @@
 
             <script>
                 document.addEventListener('DOMContentLoaded', function () {
+                    var isMobile = window.innerWidth < 768;
+
+                    function formatRupiah(val) {
+                        if (val === 0) return '0';
+                        if (val >= 1000000) return (val / 1000000).toFixed(val % 1000000 === 0 ? 0 : 1) + ' jt';
+                        if (val >= 1000) return (val / 1000).toFixed(val % 1000 === 0 ? 0 : 1) + ' rb';
+                        return val.toLocaleString('id-ID');
+                    }
+
+                    var mobileLabels = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+                    var rawLabels = {!! json_encode($months) !!};
+                    var chartLabels = isMobile ? mobileLabels : rawLabels;
+
                     var ctxBar = document.getElementById('chart-bar-monthly').getContext('2d');
                     new Chart(ctxBar, {
                         type: 'bar',
                         data: {
-                            labels: {!! json_encode($months) !!},
+                            labels: chartLabels,
                             datasets: [
                                 {
                                     label: 'Invoice In',
                                     data: {!! json_encode($invoiceInMonthly) !!},
-                                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                                    backgroundColor: 'rgba(54, 162, 235, 0.65)',
                                     borderColor: 'rgba(54, 162, 235, 1)',
                                     borderWidth: 1,
                                     borderRadius: 4
@@ -197,7 +224,7 @@
                                 {
                                     label: 'Invoice Out',
                                     data: {!! json_encode($invoiceOutMonthly) !!},
-                                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                                    backgroundColor: 'rgba(75, 192, 192, 0.65)',
                                     borderColor: 'rgba(75, 192, 192, 1)',
                                     borderWidth: 1,
                                     borderRadius: 4
@@ -206,8 +233,16 @@
                         },
                         options: {
                             responsive: true,
+                            maintainAspectRatio: false,
                             plugins: {
-                                legend: { position: 'top' },
+                                legend: {
+                                    position: 'top',
+                                    labels: {
+                                        font: { size: isMobile ? 11 : 13 },
+                                        boxWidth: isMobile ? 12 : 16,
+                                        padding: isMobile ? 10 : 16
+                                    }
+                                },
                                 tooltip: {
                                     callbacks: {
                                         label: function(context) {
@@ -216,7 +251,7 @@
                                     }
                                 },
                                 title: {
-                                    display: true,
+                                    display: !isMobile,
                                     text: 'Nominal Transaksi per Bulan – Tahun {{ $selectedYear }}',
                                     font: { size: 13 }
                                 }
@@ -224,11 +259,28 @@
                             scales: {
                                 y: {
                                     beginAtZero: true,
-                                    ticks: { stepSize: 1, precision: 0 },
-                                    title: { display: true, text: 'Nominal (Rp)' }
+                                    ticks: {
+                                        font: { size: isMobile ? 10 : 12 },
+                                        maxTicksLimit: isMobile ? 5 : 8,
+                                        callback: function(value) { return formatRupiah(value); }
+                                    },
+                                    title: {
+                                        display: !isMobile,
+                                        text: 'Nominal (Rp)',
+                                        font: { size: 12 }
+                                    },
+                                    grid: { color: 'rgba(0,0,0,0.05)' }
                                 },
                                 x: {
-                                    title: { display: true, text: 'Bulan' }
+                                    ticks: {
+                                        font: { size: isMobile ? 10 : 12 },
+                                        maxRotation: isMobile ? 45 : 0,
+                                        minRotation: isMobile ? 45 : 0
+                                    },
+                                    title: {
+                                        display: false
+                                    },
+                                    grid: { display: false }
                                 }
                             }
                         }

@@ -281,6 +281,124 @@
         .app-wrapper>footer {
             margin-top: auto;
         }
+
+        /* ===== BOTTOM NAVIGATION BAR ===== */
+        .bottom-navbar {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 65px;
+            background: #fff;
+            box-shadow: 0 -4px 20px rgba(80, 100, 180, 0.15);
+            z-index: 9999;
+            border-top: 1px solid #e4eaf0;
+        }
+
+        @media (max-width: 1199px) {
+            .bottom-navbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-around;
+            }
+            .app-wrapper {
+                padding-bottom: 75px;
+            }
+        }
+
+        .bottom-navbar .bn-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            text-decoration: none;
+            color: #8a9ab5;
+            font-size: 10px;
+            font-weight: 500;
+            gap: 3px;
+            transition: color .2s;
+            padding: 6px 0 2px;
+            position: relative;
+        }
+
+        .bottom-navbar .bn-item svg,
+        .bottom-navbar .bn-item i {
+            font-size: 20px;
+            width: 22px;
+            height: 22px;
+        }
+
+        .bottom-navbar .bn-item.active,
+        .bottom-navbar .bn-item:hover {
+            color: #4d7cfe;
+        }
+
+        .bottom-navbar .bn-item.active .bn-label,
+        .bottom-navbar .bn-item:hover .bn-label {
+            color: #4d7cfe;
+        }
+
+        /* Center raised button */
+        .bottom-navbar .bn-center {
+            margin-top: -28px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .bottom-navbar .bn-center .bn-circle {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4d7cfe 0%, #6a5acd 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(77,124,254,0.45);
+            color: #fff;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .bottom-navbar .bn-center.active .bn-circle,
+        .bottom-navbar .bn-center:hover .bn-circle {
+            transform: scale(1.08);
+            box-shadow: 0 6px 22px rgba(77,124,254,0.55);
+        }
+
+        .bottom-navbar .bn-center svg {
+            width: 24px;
+            height: 24px;
+            color: #fff;
+        }
+
+        .bottom-navbar .bn-center .bn-label {
+            color: #4d7cfe;
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .bottom-navbar .bn-label {
+            font-size: 10px;
+            margin-top: 1px;
+        }
+
+        /* Active dot indicator */
+        .bottom-navbar .bn-item.active::after {
+            content: '';
+            display: block;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #4d7cfe;
+            position: absolute;
+            bottom: 2px;
+        }
     </style>
 
 
@@ -321,6 +439,72 @@
             });
         });
     </script>
+
+    <!-- ===== BOTTOM NAVIGATION BAR ===== -->
+    <nav class="bottom-navbar">
+        {{-- Sepatu --}}
+        <a href="{{ route('sepatu.index') }}"
+           class="bn-item {{ request()->routeIs('sepatu.index') ? 'active' : '' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 18h20v2H2z"/>
+                <path d="M4 18V9a4 4 0 0 1 4-4h4l4 4h4l1 5H4z"/>
+                <circle cx="8" cy="13" r="1"/>
+            </svg>
+            <span class="bn-label">Sepatu</span>
+        </a>
+
+        {{-- Invoice In --}}
+        <a href="{{ route('invoiceIn.index') }}"
+           class="bn-item {{ request()->routeIs('invoiceIn.*') ? 'active' : '' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <polyline points="12 18 12 12"/>
+                <polyline points="9 15 12 12 15 15"/>
+            </svg>
+            <span class="bn-label">Inv. In</span>
+        </a>
+
+        {{-- Dashboard (center raised) --}}
+        <a href="{{ route('dashboard.index') }}"
+           class="bn-center {{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
+            <div class="bn-circle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
+                    <polyline points="9 21 9 12 15 12 15 21"/>
+                </svg>
+            </div>
+            <span class="bn-label">Home</span>
+        </a>
+
+        {{-- Invoice Out --}}
+        <a href="{{ route('invoiceOut.index') }}"
+           class="bn-item {{ request()->routeIs('invoiceOut.*') ? 'active' : '' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <polyline points="12 12 12 18"/>
+                <polyline points="9 15 12 18 15 15"/>
+            </svg>
+            <span class="bn-label">Inv. Out</span>
+        </a>
+
+        {{-- Inventory --}}
+        <a href="{{ route('inventory.index') }}"
+           class="bn-item {{ request()->routeIs('inventory.index') ? 'active' : '' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="21 8 21 21 3 21 3 8"/>
+                <rect x="1" y="3" width="22" height="5"/>
+                <line x1="10" y1="12" x2="14" y2="12"/>
+            </svg>
+            <span class="bn-label">Inventory</span>
+        </a>
+    </nav>
 
 </body>
 
