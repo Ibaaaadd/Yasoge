@@ -124,21 +124,16 @@
                             <div class="app-card-body">
                                 <div class="table-responsive" style="padding: 15px">
                                     <style>
-                                        table.dataTable thead th,
-                                        table.dataTable tbody td {
-                                            text-align: center;
-                                        }
-
-                                        .dt-type-numeric {
-                                            text-align: center !important;
-                                        }
-
-                                        .table.dataTable {
-                                            margin: 0 auto;
-                                            /* Center the table horizontally */
-                                        }
+                                        .inv-tbl thead tr { background: #343a40 !important; }
+                                        .inv-tbl thead th { color: #fff !important; font-weight: 600; font-size: .75rem;
+                                            text-transform: uppercase; letter-spacing: .06em; border: none !important;
+                                            padding: .85rem 1rem; background: transparent !important; text-align: center; }
+                                        .inv-tbl tbody td { border-color: #f1f3f5 !important; padding: .75rem 1rem;
+                                            vertical-align: middle; color: #212529; text-align: center; }
+                                        .inv-tbl tbody tr:hover { background: #f8f9fa; }
+                                        .dt-type-numeric { text-align: center !important; }
                                     </style>
-                                    <table id="table" class="table app-table-hover mb-0 text-left">
+                                    <table id="table" class="table inv-tbl mb-0">
                                         <thead>
                                             <tr>
                                                 <th class="cell">
@@ -168,21 +163,19 @@
                                                     <td class="cell">{{ $invoice->nomor }}</td>
                                                     <td class="cell">
                                                         <span>{{ \Carbon\Carbon::parse($invoice->tgl)->format('d M Y') }}</span>
-                                                        <span
-                                                            class="note">{{ \Carbon\Carbon::parse($invoice->created_at)->format('g:i A') }}</span>
+                                                        <span class="note">{{ \Carbon\Carbon::parse($invoice->created_at)->format('g:i A') }}</span>
                                                     </td>
-                                                    <td class="cell">Rp. {{ number_format($invoice->total) }}
-                                                    </td>
-                                                    <td class="cell"><a class="btn btn-sm btn-outline-warning px-3" style="border-radius:20px;font-size:.8rem;font-weight:600;color:#b7410e;border-color:#e67e22;"
-                                                            data-bs-toggle="modal"
+                                                    <td class="cell">Rp. {{ number_format($invoice->total) }}</td>
+                                                    <td class="cell">
+                                                        <a class="btn btn-sm btn-outline-primary px-3" style="border-radius:20px;font-size:.8rem;font-weight:600;" data-bs-toggle="modal"
                                                             data-bs-target="#invoiceModal-{{ $invoice->id }}"><i class="fas fa-eye me-1"></i>Lihat</a>
                                                     </td>
-                                                    <form id="deleteForm{{ $invoice->id }}"
-                                                        action="{{ route('invoiceOut.destroy', $invoice->id) }}"
-                                                        method="POST" class="d-inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <td class="cell">
+                                                    <td class="cell">
+                                                        <form id="deleteForm{{ $invoice->id }}"
+                                                            action="{{ route('invoiceOut.destroy', $invoice->id) }}"
+                                                            method="POST" class="d-inline">
+                                                            @csrf
+                                                            @method('DELETE')
                                                             <a href="{{ route('invoiceOut.edit', $invoice->id) }}"
                                                                 class="btn btn-warning">
                                                                 <i class="fas fa-edit"></i>
@@ -192,47 +185,109 @@
                                                                 class="btn btn-danger">
                                                                 <i class="fas fa-trash-alt"></i>
                                                             </button>
-                                                        </td>
-                                                    </form>
+                                                        </form>
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
-<style>
-    .inv-modal-header-out { background: linear-gradient(135deg, #b7410e, #e67e22); padding: 1.4rem 1.75rem; }
-    .inv-modal-header-out .inv-no { color: white; font-size: 1.15rem; font-weight: 700; margin: 0; }
-    .inv-badge-pill-out { display: inline-flex; align-items: center; gap: .3rem;
-        background: rgba(255,255,255,.2); color: white; padding: .28rem .7rem;
-        border-radius: 20px; font-size: .76rem; font-weight: 600; }
-    .inv-modal-tbl-out thead tr { background: linear-gradient(90deg, #b7410e, #f5a623); }
-    .inv-modal-tbl-out thead th { color: white !important; font-size: .76rem; text-transform: uppercase;
-        letter-spacing: .04em; border: none !important; padding: .7rem 1rem; font-weight: 600; }
-    .inv-modal-tbl-out tbody td { padding: .7rem 1rem; border-color: #fde8cc !important; font-size: .9rem; }
-    .inv-modal-tbl-out tbody tr:nth-child(even) { background: #fff8f0; }
-    .inv-footsum-out { background: linear-gradient(135deg, #b7410e, #e67e22); border-radius: 10px;
-        padding: .9rem 1.25rem; color: white; display: flex; align-items: center; justify-content: space-between; }
-    .inv-footsum-out .fs-lbl { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; opacity: .82; }
-    .inv-footsum-out .fs-amt { font-size: 1.3rem; font-weight: 700; }
-</style>
+                                    <style>
+                                        .inv-modal-header-out {
+                                            background: linear-gradient(135deg, #b7410e, #e67e22);
+                                            padding: 1.4rem 1.75rem;
+                                        }
+
+                                        .inv-modal-header-out .inv-no {
+                                            color: white;
+                                            font-size: 1.15rem;
+                                            font-weight: 700;
+                                            margin: 0;
+                                        }
+
+                                        .inv-badge-pill-out {
+                                            display: inline-flex;
+                                            align-items: center;
+                                            gap: .3rem;
+                                            background: rgba(255, 255, 255, .2);
+                                            color: white;
+                                            padding: .28rem .7rem;
+                                            border-radius: 20px;
+                                            font-size: .76rem;
+                                            font-weight: 600;
+                                        }
+
+                                        .inv-modal-tbl-out thead tr {
+                                            background: linear-gradient(90deg, #b7410e, #f5a623);
+                                        }
+
+                                        .inv-modal-tbl-out thead th {
+                                            color: white !important;
+                                            font-size: .76rem;
+                                            text-transform: uppercase;
+                                            letter-spacing: .04em;
+                                            border: none !important;
+                                            padding: .7rem 1rem;
+                                            font-weight: 600;
+                                        }
+
+                                        .inv-modal-tbl-out tbody td {
+                                            padding: .7rem 1rem;
+                                            border-color: #fde8cc !important;
+                                            font-size: .9rem;
+                                        }
+
+                                        .inv-modal-tbl-out tbody tr:nth-child(even) {
+                                            background: #fff8f0;
+                                        }
+
+                                        .inv-footsum-out {
+                                            background: linear-gradient(135deg, #b7410e, #e67e22);
+                                            border-radius: 10px;
+                                            padding: .9rem 1.25rem;
+                                            color: white;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: space-between;
+                                        }
+
+                                        .inv-footsum-out .fs-lbl {
+                                            font-size: .72rem;
+                                            text-transform: uppercase;
+                                            letter-spacing: .08em;
+                                            opacity: .82;
+                                        }
+
+                                        .inv-footsum-out .fs-amt {
+                                            font-size: 1.3rem;
+                                            font-weight: 700;
+                                        }
+                                    </style>
                                     @foreach ($invoiceOut as $invoice)
                                         <div class="modal fade" id="invoiceModal-{{ $invoice->id }}" tabindex="-1"
                                             aria-labelledby="invoiceModalLabel-{{ $invoice->id }}" aria-hidden="true">
                                             <div class="modal-dialog modal-lg modal-dialog-centered">
-                                                <div class="modal-content" style="border-radius:14px;overflow:hidden;border:none;box-shadow:0 10px 40px rgba(0,0,0,.15);">
+                                                <div class="modal-content"
+                                                    style="border-radius:14px;overflow:hidden;border:none;box-shadow:0 10px 40px rgba(0,0,0,.15);">
                                                     {{-- Styled Header --}}
                                                     <div class="inv-modal-header-out">
                                                         <div class="d-flex justify-content-between align-items-start">
                                                             <div>
-                                                                <div style="font-size:.68rem;color:rgba(255,255,255,.75);text-transform:uppercase;letter-spacing:.09em;margin-bottom:.3rem;">
+                                                                <div
+                                                                    style="font-size:.68rem;color:rgba(255,255,255,.75);text-transform:uppercase;letter-spacing:.09em;margin-bottom:.3rem;">
                                                                     <i class="fas fa-file-export me-1"></i> Invoice Keluar
                                                                 </div>
                                                                 <h5 class="inv-no"># {{ $invoice->nomor }}</h5>
                                                                 <div class="d-flex flex-wrap gap-2 mt-2">
-                                                                    <span class="inv-badge-pill-out"><i class="fas fa-calendar-alt"></i> {{ \Carbon\Carbon::parse($invoice->tgl)->format('d M Y') }}</span>
-                                                                    <span class="inv-badge-pill-out"><i class="fas fa-box"></i> {{ $invoice->items->count() }} item</span>
+                                                                    <span class="inv-badge-pill-out"><i
+                                                                            class="fas fa-calendar-alt"></i>
+                                                                        {{ \Carbon\Carbon::parse($invoice->tgl)->format('d M Y') }}</span>
+                                                                    <span class="inv-badge-pill-out"><i
+                                                                            class="fas fa-box"></i>
+                                                                        {{ $invoice->items->count() }} item</span>
                                                                 </div>
                                                             </div>
-                                                            <button type="button" class="btn-close btn-close-white mt-1" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            <button type="button" class="btn-close btn-close-white mt-1"
+                                                                data-bs-dismiss="modal" aria-label="Close"></button>
                                                         </div>
                                                     </div>
                                                     {{-- Body --}}
@@ -250,7 +305,9 @@
                                                                     @foreach ($invoice->items as $item)
                                                                         <tr class="text-center">
                                                                             <td>{{ $item->sepatu->kode }}</td>
-                                                                            <td><span class="badge bg-light text-dark" style="font-size:.85rem;padding:.4em .7em;">{{ $item->jumlah }}</span></td>
+                                                                            <td><span class="badge bg-light text-dark"
+                                                                                    style="font-size:.85rem;padding:.4em .7em;">{{ $item->jumlah }}</span>
+                                                                            </td>
                                                                             <td>Rp {{ number_format($item->harga) }}</td>
                                                                         </tr>
                                                                     @endforeach
@@ -258,13 +315,17 @@
                                                             </table>
                                                         </div>
                                                         <div class="inv-footsum-out mt-3">
-                                                            <div class="fs-lbl"><i class="fas fa-calculator me-1"></i> Total Pembayaran</div>
-                                                            <div class="fs-amt">Rp {{ number_format($invoice->total) }}</div>
+                                                            <div class="fs-lbl"><i class="fas fa-calculator me-1"></i>
+                                                                Total Pembayaran</div>
+                                                            <div class="fs-amt">Rp {{ number_format($invoice->total) }}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     {{-- Footer --}}
                                                     <div class="modal-footer border-0 pt-0 px-4 pb-3">
-                                                        <button type="button" class="btn btn-outline-secondary" style="border-radius:8px;padding:.5rem 1.5rem;font-weight:600;" data-bs-dismiss="modal">
+                                                        <button type="button" class="btn btn-outline-secondary"
+                                                            style="border-radius:8px;padding:.5rem 1.5rem;font-weight:600;"
+                                                            data-bs-dismiss="modal">
                                                             <i class="fas fa-times me-1"></i> Tutup
                                                         </button>
                                                     </div>
@@ -281,6 +342,15 @@
         </div>
     </div>
 
+    <style>
+        .inv-card {
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, .06);
+            overflow: hidden;
+            background: #fff;
+        }
+    </style>
     <script>
         function confirmDelete(invoiceId) {
             Swal.fire({

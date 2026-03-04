@@ -3,14 +3,13 @@
 @section('content')
     <div class="app-content pt-5 p-md-4 p-lg-4 pb-2">
         <div class="container-xl">
-            {{-- ===== WELCOME BANNER ===== --}}
             @php
-                $user      = auth()->user();
-                $userName  = $user ? $user->name : 'User';
-                $initials  = collect(explode(' ', $userName))
-                                ->take(2)
-                                ->map(fn($w) => strtoupper(substr($w, 0, 1)))
-                                ->implode('');
+                $user = auth()->user();
+                $userName = $user ? $user->name : 'User';
+                $initials = collect(explode(' ', $userName))
+                    ->take(2)
+                    ->map(fn($w) => strtoupper(substr($w, 0, 1)))
+                    ->implode('');
                 $quotes = [
                     '"Success is not final, failure is not fatal: it is the courage to continue that counts."',
                     '"The secret of getting ahead is getting started."',
@@ -22,10 +21,14 @@
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="rounded-3 shadow-sm px-4 py-4"
-                         style="background: linear-gradient(135deg, #15a362 0%, #0b7044 100%); color:#fff; overflow:hidden; position:relative;">
+                        style="background: linear-gradient(135deg, #15a362 0%, #0b7044 100%); color:#fff; overflow:hidden; position:relative;">
                         <!-- decorative circles -->
-                        <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none;"></div>
-                        <div style="position:absolute;bottom:-50px;right:80px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none;"></div>
+                        <div
+                            style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none;">
+                        </div>
+                        <div
+                            style="position:absolute;bottom:-50px;right:80px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none;">
+                        </div>
 
                         <div class="row align-items-center">
                             <div class="col">
@@ -38,10 +41,12 @@
                             </div>
                             <div class="col-auto text-end d-none d-md-block">
                                 <div class="d-flex flex-column align-items-center gap-3">
-                                    <div style="width:70px;height:70px;border-radius:50%;border:3px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:#fff;background:rgba(255,255,255,.15);">
+                                    <div
+                                        style="width:70px;height:70px;border-radius:50%;border:3px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:#fff;background:rgba(255,255,255,.15);">
                                         {{ $initials }}
                                     </div>
-                                    <p class="mb-0 fst-italic text-center" style="color:rgba(255,255,255,.75); font-size:.78rem; max-width:220px;">
+                                    <p class="mb-0 fst-italic text-center"
+                                        style="color:rgba(255,255,255,.75); font-size:.78rem; max-width:220px;">
                                         {{ $quote }}
                                     </p>
                                 </div>
@@ -160,11 +165,16 @@
                                     </h4>
                                 </div>
                                 <div class="col-auto">
-                                    <form method="GET" action="{{ route('dashboard.index') }}" class="d-flex align-items-center gap-2">
-                                        <label for="yearSelect" class="me-2 mb-0 fw-semibold text-muted small">Tahun:</label>
-                                        <select id="yearSelect" name="year" class="form-select form-select-sm" style="width:auto;" onchange="this.form.submit()">
+                                    <form method="GET" action="{{ route('dashboard.index') }}"
+                                        class="d-flex align-items-center gap-2">
+                                        <label for="yearSelect"
+                                            class="me-2 mb-0 fw-semibold text-muted small">Tahun:</label>
+                                        <select id="yearSelect" name="year" class="form-select form-select-sm"
+                                            style="width:auto;" onchange="this.form.submit()">
                                             @foreach ($years as $yr)
-                                                <option value="{{ $yr }}" {{ $yr == $selectedYear ? 'selected' : '' }}>{{ $yr }}</option>
+                                                <option value="{{ $yr }}"
+                                                    {{ $yr == $selectedYear ? 'selected' : '' }}>{{ $yr }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </form>
@@ -178,6 +188,7 @@
                                     width: 100%;
                                     height: 320px;
                                 }
+
                                 @media (max-width: 767px) {
                                     .chart-bar-wrap {
                                         height: 240px;
@@ -193,7 +204,7 @@
             </div><!--//row bar chart-->
 
             <script>
-                document.addEventListener('DOMContentLoaded', function () {
+                document.addEventListener('DOMContentLoaded', function() {
                     var isMobile = window.innerWidth < 768;
 
                     function formatRupiah(val) {
@@ -203,7 +214,7 @@
                         return val.toLocaleString('id-ID');
                     }
 
-                    var mobileLabels = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+                    var mobileLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
                     var rawLabels = {!! json_encode($months) !!};
                     var chartLabels = isMobile ? mobileLabels : rawLabels;
 
@@ -212,8 +223,7 @@
                         type: 'bar',
                         data: {
                             labels: chartLabels,
-                            datasets: [
-                                {
+                            datasets: [{
                                     label: 'Invoice In',
                                     data: {!! json_encode($invoiceInMonthly) !!},
                                     backgroundColor: 'rgba(54, 162, 235, 0.65)',
@@ -238,7 +248,9 @@
                                 legend: {
                                     position: 'top',
                                     labels: {
-                                        font: { size: isMobile ? 11 : 13 },
+                                        font: {
+                                            size: isMobile ? 11 : 13
+                                        },
                                         boxWidth: isMobile ? 12 : 16,
                                         padding: isMobile ? 10 : 16
                                     }
@@ -246,41 +258,56 @@
                                 tooltip: {
                                     callbacks: {
                                         label: function(context) {
-                                            return context.dataset.label + ': Rp ' + context.parsed.y.toLocaleString('id-ID');
+                                            return context.dataset.label + ': Rp ' + context.parsed.y
+                                                .toLocaleString('id-ID');
                                         }
                                     }
                                 },
                                 title: {
                                     display: !isMobile,
                                     text: 'Nominal Transaksi per Bulan – Tahun {{ $selectedYear }}',
-                                    font: { size: 13 }
+                                    font: {
+                                        size: 13
+                                    }
                                 }
                             },
                             scales: {
                                 y: {
                                     beginAtZero: true,
                                     ticks: {
-                                        font: { size: isMobile ? 10 : 12 },
+                                        font: {
+                                            size: isMobile ? 10 : 12
+                                        },
                                         maxTicksLimit: isMobile ? 5 : 8,
-                                        callback: function(value) { return formatRupiah(value); }
+                                        callback: function(value) {
+                                            return formatRupiah(value);
+                                        }
                                     },
                                     title: {
                                         display: !isMobile,
                                         text: 'Nominal (Rp)',
-                                        font: { size: 12 }
+                                        font: {
+                                            size: 12
+                                        }
                                     },
-                                    grid: { color: 'rgba(0,0,0,0.05)' }
+                                    grid: {
+                                        color: 'rgba(0,0,0,0.05)'
+                                    }
                                 },
                                 x: {
                                     ticks: {
-                                        font: { size: isMobile ? 10 : 12 },
+                                        font: {
+                                            size: isMobile ? 10 : 12
+                                        },
                                         maxRotation: isMobile ? 45 : 0,
                                         minRotation: isMobile ? 45 : 0
                                     },
                                     title: {
                                         display: false
                                     },
-                                    grid: { display: false }
+                                    grid: {
+                                        display: false
+                                    }
                                 }
                             }
                         }
@@ -298,11 +325,15 @@
                                     <h4 class="app-card-title">Invoice Chart</h4>
                                 </div><!--//col-->
                                 <div class="col-auto d-flex align-items-center gap-2">
-                                    <form method="GET" action="{{ route('dashboard.index') }}" class="d-flex align-items-center gap-2">
+                                    <form method="GET" action="{{ route('dashboard.index') }}"
+                                        class="d-flex align-items-center gap-2">
                                         <label class="mb-0 fw-semibold text-muted small">Tahun:</label>
-                                        <select name="year" class="form-select form-select-sm" style="width:auto;" onchange="this.form.submit()">
+                                        <select name="year" class="form-select form-select-sm" style="width:auto;"
+                                            onchange="this.form.submit()">
                                             @foreach ($years as $yr)
-                                                <option value="{{ $yr }}" {{ $yr == $selectedYear ? 'selected' : '' }}>{{ $yr }}</option>
+                                                <option value="{{ $yr }}"
+                                                    {{ $yr == $selectedYear ? 'selected' : '' }}>{{ $yr }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </form>
@@ -343,7 +374,7 @@
                             options: {
                                 responsive: true,
                                 legend: {
-                                    position: 'right', // Move the legend to the right side
+                                    position: 'right',
                                 },
                                 plugins: {
                                     tooltip: {
@@ -368,21 +399,20 @@
                     });
                 </script>
 
-
                 <div class="col-12 col-lg-6">
                     <div class="app-card app-card-stats-table h-100 shadow-sm">
                         <div class="app-card-header p-3">
                             <div class="row justify-content-between align-items-center">
                                 <div class="col-auto">
                                     <h4 class="app-card-title">Shoes</h4>
-                                </div><!--//col-->
+                                </div>
                                 <div class="col-auto">
                                     <div class="card-header-action">
                                         <a href="{{ route('sepatu.index') }}">View</a>
-                                    </div><!--//card-header-actions-->
-                                </div><!--//col-->
-                            </div><!--//row-->
-                        </div><!--//app-card-header-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="app-card-body p-3 p-lg-4">
                             <div class="table-responsive">
                                 <table class="table table-borderless mb-0">
@@ -395,7 +425,6 @@
                                     </thead>
                                     <tbody>
                                         @php
-                                            // Mengambil 5 data terbaru dengan mengurutkan dari yang terbaru ke yang terlama
                                             $latestShoes = $sepatu->sortByDesc('created_at')->take(5);
                                         @endphp
 
@@ -411,28 +440,43 @@
                                         @endforeach
                                     </tbody>
                                 </table>
-                            </div><!--//table-responsive-->
-                        </div><!--//app-card-body-->
-                    </div><!--//app-card-->
-                </div><!--//col-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <style>
+                    .modal-header-green {
+                        background: linear-gradient(135deg, #15a362 0%, #0b7044 100%);
+                        color: #fff;
+                        border-radius: .5rem .5rem 0 0;
+                    }
+
+                    .modal-header-green .btn-close {
+                        filter: invert(1) grayscale(1);
+                    }
+                </style>
                 @foreach ($sepatu as $item)
-                    <div class="modal fade" id="viewSepatuModal_{{ $item->id }}" tabindex="-1" role="dialog"
+                    <div class="modal fade" id="viewSepatuModal_{{ $item->id }}" tabindex="-1"
                         aria-labelledby="viewSepatuModalLabel_{{ $item->id }}" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="viewSepatuModalLabel_{{ $item->id }}">
-                                        {{ $item->kode }}
-                                    </h5>
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content border-0 shadow">
+                                <div class="modal-header modal-header-green">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fas fa-shoe-prints"></i>
+                                        <h5 class="modal-title fw-bold mb-0"
+                                            id="viewSepatuModalLabel_{{ $item->id }}">
+                                            {{ $item->kode }}
+                                        </h5>
+                                    </div>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
-                                <div class="modal-body">
-                                    <img src="{{ asset('foto/' . $item->gambar) }}" alt="Foto Sepatu" class="img-fluid">
+                                <div class="modal-body p-3 text-center">
+                                    <img src="{{ asset('foto/' . $item->gambar) }}" alt="Foto Sepatu"
+                                        class="img-fluid rounded" style="max-height: 400px; object-fit: contain;">
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Close</button>
+                                <div class="modal-footer border-top-0 pt-0">
+                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
                                 </div>
                             </div>
                         </div>
@@ -440,6 +484,6 @@
                 @endforeach
 
             </div>
-        </div><!--//container-fluid-->
-    </div><!--//app-content pb-0-->
+        </div>
+    </div>
 @endsection

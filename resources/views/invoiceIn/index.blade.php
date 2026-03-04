@@ -125,21 +125,16 @@
                             <div class="app-card-body">
                                 <div class="table-responsive" style="padding: 15px">
                                     <style>
-                                        table.dataTable thead th,
-                                        table.dataTable tbody td {
-                                            text-align: center;
-                                        }
-
-                                        .dt-type-numeric {
-                                            text-align: center !important;
-                                        }
-
-                                        .table.dataTable {
-                                            margin: 0 auto;
-                                            /* Center the table horizontally */
-                                        }
+                                        .inv-tbl thead tr { background: #343a40 !important; }
+                                        .inv-tbl thead th { color: #fff !important; font-weight: 600; font-size: .75rem;
+                                            text-transform: uppercase; letter-spacing: .06em; border: none !important;
+                                            padding: .85rem 1rem; background: transparent !important; text-align: center; }
+                                        .inv-tbl tbody td { border-color: #f1f3f5 !important; padding: .75rem 1rem;
+                                            vertical-align: middle; color: #212529; text-align: center; }
+                                        .inv-tbl tbody tr:hover { background: #f8f9fa; }
+                                        .dt-type-numeric { text-align: center !important; }
                                     </style>
-                                    <table id="table" class="table app-table-hover mb-0">
+                                    <table id="table" class="table inv-tbl mb-0">
                                         <thead>
                                             <tr>
                                                 <th class="cell">
@@ -163,45 +158,38 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <div class="mb-3">
-                                                @foreach ($invoiceIn as $index => $invoice)
-                                                    <tr class="">
-                                                        <td class="cell">
-                                                            <div class="text-center">{{ $index + 1 }}</div>
-                                                        </td>
-                                                        <td class="cell">
-                                                            <div class="text-center">{{ $invoice->nomor }}</div>
-                                                        </td>
-                                                        <td class="cell">
-                                                            <span>{{ \Carbon\Carbon::parse($invoice->tgl)->format('d M Y') }}</span>
-                                                            <span
-                                                                class="note">{{ \Carbon\Carbon::parse($invoice->created_at)->format('g:i A') }}</span>
-                                                        </td>
-                                                        <td class="cell">Rp. {{ number_format($invoice->total) }}</td>
-                                                        <td class="cell">
-                                                            <a class="btn btn-sm btn-outline-primary px-3" style="border-radius:20px;font-size:.8rem;font-weight:600;" data-bs-toggle="modal"
-                                                                data-bs-target="#invoiceModal-{{ $invoice->id }}"><i class="fas fa-eye me-1"></i>Lihat</a>
-                                                        </td>
-                                                        <td class="cell">
-                                                            <form id="deleteForm{{ $invoice->id }}"
-                                                                action="{{ route('invoiceIn.destroy', $invoice->id) }}"
-                                                                method="POST" class="d-inline">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <a href="{{ route('invoiceIn.edit', $invoice->id) }}"
-                                                                    class="btn btn-warning">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </a>
-                                                                <button type="button"
-                                                                    onclick="confirmDelete({{ $invoice->id }})"
-                                                                    class="btn btn-danger">
-                                                                    <i class="fas fa-trash-alt"></i>
-                                                                </button>
-                                                            </form>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </div>
+                                            @foreach ($invoiceIn as $index => $invoice)
+                                                <tr class="text-center">
+                                                    <td class="cell">{{ $index + 1 }}</td>
+                                                    <td class="cell">{{ $invoice->nomor }}</td>
+                                                    <td class="cell">
+                                                        <span>{{ \Carbon\Carbon::parse($invoice->tgl)->format('d M Y') }}</span>
+                                                        <span class="note">{{ \Carbon\Carbon::parse($invoice->created_at)->format('g:i A') }}</span>
+                                                    </td>
+                                                    <td class="cell">Rp. {{ number_format($invoice->total) }}</td>
+                                                    <td class="cell">
+                                                        <a class="btn btn-sm btn-outline-primary px-3" style="border-radius:20px;font-size:.8rem;font-weight:600;" data-bs-toggle="modal"
+                                                            data-bs-target="#invoiceModal-{{ $invoice->id }}"><i class="fas fa-eye me-1"></i>Lihat</a>
+                                                    </td>
+                                                    <td class="cell">
+                                                        <form id="deleteForm{{ $invoice->id }}"
+                                                            action="{{ route('invoiceIn.destroy', $invoice->id) }}"
+                                                            method="POST" class="d-inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <a href="{{ route('invoiceIn.edit', $invoice->id) }}"
+                                                                class="btn btn-warning">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                            <button type="button"
+                                                                onclick="confirmDelete({{ $invoice->id }})"
+                                                                class="btn btn-danger">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
                                         </tbody>
                                     </table>
 
