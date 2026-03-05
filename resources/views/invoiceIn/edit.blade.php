@@ -178,7 +178,7 @@
                                         <input type="hidden" name="total" id="totali">
                                     </div>
                                     <div class="d-flex gap-2 justify-content-end">
-                                        <a href="{{ route('invoiceIn.index') }}" class="btn btn-outline-secondary btn-back-inv">
+                                        <a href="{{ route('invoiceIn.index') }}" class="btn btn-secondary btn-back-inv">
                                             <i class="fas fa-arrow-left me-1"></i> Kembali
                                         </a>
                                         <button type="submit" class="btn-save-inv btn">

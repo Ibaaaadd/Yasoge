@@ -311,7 +311,7 @@
             <div class="doc-title">Surat Jalan</div>
             <div class="doc-type">Invoice Keluar</div>
             <div class="lbl" style="margin-top:4px;">No. Invoice</div>
-            <div class="doc-num"># {{ $invoice->nomor }}</div>
+            <div class="doc-num">{{ $invoice->nomor }}</div>
         </div>
     </div>
 

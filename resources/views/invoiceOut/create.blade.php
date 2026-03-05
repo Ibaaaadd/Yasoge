@@ -98,14 +98,30 @@
                             <div class="row g-3 mb-4">
                                 <div class="col-sm-6">
                                     <label class="inv-field-label"><i class="fas fa-hashtag"></i> Nomor Invoice</label>
-                                    <input type="text" name="nomor" id="nomor" class="form-control inv-control"
-                                        placeholder="Contoh: INV-OUT-001" required>
+                                    <input type="text" id="nomor-display" class="form-control inv-control"
+                                        value="{{ $defaultNomor }}" style="text-transform:uppercase;font-weight:600;letter-spacing:.04em;" disabled>
+                                    <input type="hidden" name="nomor" id="nomor" value="{{ $defaultNomor }}">
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="inv-field-label"><i class="fas fa-calendar-alt"></i> Tanggal</label>
-                                    <input type="date" name="tgl" id="tgl" class="form-control inv-control" required>
+                                    <input type="date" name="tgl" id="tgl" class="form-control inv-control" value="{{ $defaultTgl }}" required>
                                 </div>
                             </div>
+                            <script>
+                                document.getElementById('tgl').addEventListener('change', function () {
+                                    const val = this.value; // yyyy-mm-dd
+                                    if (!val) return;
+                                    const [yyyy, mm, dd] = val.split('-');
+                                    const yy = yyyy.slice(2);
+                                    const dateStr = dd + mm + yy;
+                                    const hiddenEl  = document.getElementById('nomor');
+                                    const displayEl = document.getElementById('nomor-display');
+                                    const seq = (hiddenEl.value.match(/-(\d{3})$/) || [, '001'])[1];
+                                    const newVal = ('YSG-OUT-' + dateStr + '-' + seq).toUpperCase();
+                                    hiddenEl.value  = newVal;
+                                    displayEl.value = newVal;
+                                });
+                            </script>
 
                             {{-- Items Table --}}
                             <div class="mb-3">
@@ -181,7 +197,7 @@
                                         <input type="hidden" name="total" id="totali">
                                     </div>
                                     <div class="d-flex gap-2 justify-content-end">
-                                        <a href="{{ route('invoiceOut.index') }}" class="btn btn-outline-secondary btn-back-inv">
+                                        <a href="{{ route('invoiceOut.index') }}" class="btn btn-secondary btn-back-inv">
                                             <i class="fas fa-arrow-left me-1"></i> Kembali
                                         </a>
                                         <button type="submit" class="btn-save-inv btn">

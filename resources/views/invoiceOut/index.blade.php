@@ -27,7 +27,7 @@
                         <h1 class="app-page-title mb-0">Invoice Keluar</h1>
                     </div>
                     <div class="col-auto">
-                        <a class="btn btn-warning text-white fw-bold" href="{{ route('invoiceOut.create') }}">
+                        <a class="btn app-btn-primary" href="{{ route('invoiceOut.create') }}">
                             <i class="fas fa-plus me-1"></i> New Invoice
                         </a>
                     </div>
@@ -62,7 +62,7 @@
                                     <button type="submit" class="btn btn-sm btn-primary px-3" style="font-weight:600;">
                                         <i class="fas fa-filter me-1"></i> Filter
                                     </button>
-                                    <a href="{{ route('invoiceOut.index') }}" class="btn btn-sm btn-outline-secondary px-3" style="font-weight:600;">
+                                    <a href="{{ route('invoiceOut.index') }}" class="btn btn-sm btn-secondary px-3" style="font-weight:600;">
                                         <i class="fas fa-times me-1"></i> Reset
                                     </a>
                                     <a href="{{ route('invoiceOut.export', array_filter(['date_from' => $dateFrom ?? '', 'date_to' => $dateTo ?? ''])) }}"
@@ -136,9 +136,6 @@
                                                     <div class="text-center">Detail</div>
                                                 </th>
                                                 <th class="cell">
-                                                    <div class="text-center">Surat Jalan</div>
-                                                </th>
-                                                <th class="cell">
                                                     <div class="text-center">Aksi</div>
                                                 </th>
                                             </tr>
@@ -147,7 +144,7 @@
                                             @foreach ($invoiceOut as $index => $invoice)
                                                 <tr class="text-center">
                                                     <td class="cell">{{ $index + 1 }}</td>
-                                                    <td class="cell">{{ $invoice->nomor }}</td>
+                                                    <td class="cell" style="white-space:nowrap;">{{ $invoice->nomor }}</td>
                                                     <td class="cell">
                                                         <span>{{ \Carbon\Carbon::parse($invoice->tgl)->format('d M Y') }}</span>
                                                         <span class="note">{{ \Carbon\Carbon::parse($invoice->created_at)->format('g:i A') }}</span>
@@ -157,26 +154,24 @@
                                                         <a class="btn btn-sm btn-outline-primary px-3" style="border-radius:20px;font-size:.8rem;font-weight:600;" data-bs-toggle="modal"
                                                             data-bs-target="#invoiceModal-{{ $invoice->id }}"><i class="fas fa-eye me-1"></i>Lihat</a>
                                                     </td>
-                                                    <td class="cell">
+                                                    <td class="cell" style="white-space:nowrap;">
                                                         <a href="{{ route('invoiceOut.print', $invoice->id) }}" target="_blank"
-                                                            class="btn btn-sm btn-outline-secondary px-3"
+                                                            class="btn btn-sm btn-secondary"
                                                             style="border-radius:20px;font-size:.8rem;font-weight:600;">
-                                                            <i class="fas fa-print me-1"></i>Cetak
+                                                            <i class="fas fa-print"></i>
                                                         </a>
-                                                    </td>
-                                                    <td class="cell">
                                                         <form id="deleteForm{{ $invoice->id }}"
                                                             action="{{ route('invoiceOut.destroy', $invoice->id) }}"
                                                             method="POST" class="d-inline">
                                                             @csrf
                                                             @method('DELETE')
                                                             <a href="{{ route('invoiceOut.edit', $invoice->id) }}"
-                                                                class="btn btn-warning">
+                                                                class="btn btn-warning btn-sm" style="border-radius:20px;">
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
                                                             <button type="button"
                                                                 onclick="confirmDelete({{ $invoice->id }})"
-                                                                class="btn btn-danger">
+                                                                class="btn btn-danger btn-sm" style="border-radius:20px;">
                                                                 <i class="fas fa-trash-alt"></i>
                                                             </button>
                                                         </form>

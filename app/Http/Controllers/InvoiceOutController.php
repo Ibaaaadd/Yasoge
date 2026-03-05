@@ -196,7 +196,14 @@ class InvoiceOutController extends Controller
             $s->current_stock = $stockMap[$s->id] ?? 0;
             return $s;
         });
-        return view('invoiceOut.create', compact('sepatuItems'));
+
+        $dateStr      = now()->format('dmy');
+        $prefix       = 'YSG-OUT-' . $dateStr . '-';
+        $count        = InvoiceOut::where('nomor', 'like', $prefix . '%')->count();
+        $defaultNomor = $prefix . str_pad($count + 1, 3, '0', STR_PAD_LEFT);
+        $defaultTgl   = now()->format('Y-m-d');
+
+        return view('invoiceOut.create', compact('sepatuItems', 'defaultNomor', 'defaultTgl'));
     }
 
     public function store(Request $request)
