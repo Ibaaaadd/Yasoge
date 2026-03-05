@@ -38,10 +38,10 @@
         }
 
         /* ════ COLOR THEMES ════ */
-        /* Theme 1 – Biru */
-        .theme-blue { --accent: #1557b0; --accent2: #2c7be5; --light: #f0f5ff; --border: #c8d9f5; --badge-bg: #e6eeff; --tfoot-bg: #eef2ff; }
-        /* Theme 2 – Hijau Teal */
-        .theme-green { --accent: #0d7a5f; --accent2: #18a97f; --light: #f0faf6; --border: #b6e0d2; --badge-bg: #d6f3ea; --tfoot-bg: #e8f8f2; }
+        /* Theme 1 – Orange (warna utama Invoice Keluar) */
+        .theme-orange { --accent: #b7410e; --accent2: #e67e22; --light: #fff8f0; --border: #fde8cc; --badge-bg: #fde8cc; --tfoot-bg: #fff3e0; }
+        /* Theme 2 – Amber/Coklat */
+        .theme-amber  { --accent: #7c4f1e; --accent2: #a0622a; --light: #fdf5ec; --border: #e8ceaa; --badge-bg: #f5e0c0; --tfoot-bg: #faf0e0; }
 
         /* ── Header ── */
         .sj-header {
@@ -140,7 +140,7 @@
             font-weight: 700;
         }
         .sj-table thead th:nth-child(2) { text-align: left; }
-        .sj-table tbody tr { border-bottom: 1px solid #e8eef8; }
+        .sj-table tbody tr { border-bottom: 1px solid #f0e8e0; }
         .sj-table tbody tr:nth-child(even) { background: var(--light); }
         .sj-table tbody td {
             padding: 6px 8px;
@@ -292,12 +292,12 @@
 <div class="print-bar">
     <span>Surat Jalan &nbsp;|&nbsp; {{ $invoice->nomor }}</span>
     <button onclick="window.print()">🖨️ Cetak / Print</button>
-    <a href="{{ route('invoiceIn.index') }}">← Kembali</a>
+    <a href="{{ route('invoiceOut.index') }}">← Kembali</a>
 </div>
 
 @php $grandQty = $invoice->items->sum('jumlah'); @endphp
 
-@foreach (['theme-blue', 'theme-green'] as $theme)
+@foreach (['theme-orange', 'theme-amber'] as $theme)
 <div class="page {{ $theme }}">
 
     {{-- Header --}}
@@ -309,7 +309,7 @@
         <div class="sj-doc-info">
             <div class="lbl">Dokumen</div>
             <div class="doc-title">Surat Jalan</div>
-            <div class="doc-type">Invoice Masuk</div>
+            <div class="doc-type">Invoice Keluar</div>
             <div class="lbl" style="margin-top:4px;">No. Invoice</div>
             <div class="doc-num"># {{ $invoice->nomor }}</div>
         </div>

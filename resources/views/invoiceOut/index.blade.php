@@ -22,97 +22,81 @@
                         });
                     </script>
                 @endif
-                <div class="row g-3 mb-4 align-items-center justify-content-between">
+                <div class="row g-3 mb-3 align-items-center justify-content-between">
                     <div class="col-auto">
                         <h1 class="app-page-title mb-0">Invoice Keluar</h1>
                     </div>
                     <div class="col-auto">
-                        <div class="page-utilities">
-                            <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
+                        <a class="btn btn-warning text-white fw-bold" href="{{ route('invoiceOut.create') }}">
+                            <i class="fas fa-plus me-1"></i> New Invoice
+                        </a>
+                    </div>
+                </div>
+
+                {{-- ── Filter & Export Bar ── --}}
+                <form method="GET" action="{{ route('invoiceOut.index') }}" id="filter-form">
+                    <div class="app-card shadow-sm mb-3">
+                        <div class="app-card-body p-3">
+                            <div class="row g-2 align-items-end">
                                 <div class="col-auto">
-                                    <form class="table-search-form row gx-1 align-items-center" id="search-form">
-                                        <div class="col-auto">
-                                            <input type="text" id="search-orders" name="searchorders"
-                                                class="form-control search-orders" placeholder="Search">
-                                        </div>
-                                        <div class="col-auto">
-                                            <button type="submit" class="btn app-btn-secondary">Search</button>
-                                        </div>
-                                    </form>
+                                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#555;">
+                                        <i class="fas fa-search me-1"></i> Cari
+                                    </label>
+                                    <input type="text" id="search-orders" class="form-control form-control-sm" placeholder="ID Invoice..." style="min-width:160px;">
                                 </div>
                                 <div class="col-auto">
-                                    <select class="form-select w-auto" id="filter-options">
-                                        <option selected value="all">All</option>
-                                        <option value="week">This week</option>
-                                        <option value="month">This month</option>
-                                        <option value="three-months">Last 3 months</option>
-                                    </select>
+                                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#555;">
+                                        <i class="fas fa-calendar me-1"></i> Dari Tanggal
+                                    </label>
+                                    <input type="date" name="date_from" id="date_from" class="form-control form-control-sm"
+                                        value="{{ $dateFrom ?? '' }}">
                                 </div>
                                 <div class="col-auto">
-                                    <a class="btn app-btn-secondary" href="{{ route('invoiceOut.create') }}">
-                                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-download me-1"
-                                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd"
-                                                d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                                            <path fill-rule="evenodd"
-                                                d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
-                                        </svg>
-                                        New Invoice
+                                    <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#555;">
+                                        <i class="fas fa-calendar me-1"></i> Sampai Tanggal
+                                    </label>
+                                    <input type="date" name="date_to" id="date_to" class="form-control form-control-sm"
+                                        value="{{ $dateTo ?? '' }}">
+                                </div>
+                                <div class="col-auto d-flex gap-2">
+                                    <button type="submit" class="btn btn-sm btn-primary px-3" style="font-weight:600;">
+                                        <i class="fas fa-filter me-1"></i> Filter
+                                    </button>
+                                    <a href="{{ route('invoiceOut.index') }}" class="btn btn-sm btn-outline-secondary px-3" style="font-weight:600;">
+                                        <i class="fas fa-times me-1"></i> Reset
+                                    </a>
+                                    <a href="{{ route('invoiceOut.export', array_filter(['date_from' => $dateFrom ?? '', 'date_to' => $dateTo ?? ''])) }}"
+                                        class="btn btn-sm btn-success px-3" style="font-weight:600;">
+                                        <i class="fas fa-file-excel me-1"></i> Export Excel
                                     </a>
                                 </div>
-                            </div><!--//row-->
-                        </div><!--//table-utilities-->
-                    </div><!--//col-auto-->
-                </div><!--//row-->
+                            </div>
+                            @if($dateFrom || $dateTo)
+                            <div class="mt-2">
+                                <span class="badge bg-warning text-dark" style="font-size:.8rem;padding:.4em .8em;">
+                                    <i class="fas fa-calendar-check me-1"></i>
+                                    Menampilkan:
+                                    {{ $dateFrom ? \Carbon\Carbon::parse($dateFrom)->format('d M Y') : 'Awal' }}
+                                    &nbsp;–&nbsp;
+                                    {{ $dateTo ? \Carbon\Carbon::parse($dateTo)->format('d M Y') : 'Sekarang' }}
+                                    &nbsp;({{ $invoiceOut->count() }} invoice)
+                                </span>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </form>
+
                 <script>
-                    document.addEventListener('DOMContentLoaded', function() {
+                    document.addEventListener('DOMContentLoaded', function () {
                         const searchInput = document.getElementById('search-orders');
-                        const filterOptions = document.getElementById('filter-options');
-                        const invoiceRows = document.querySelectorAll('tbody tr');
-                        const form = document.getElementById('search-form');
-
-                        form.addEventListener('submit', function(event) {
-                            event.preventDefault();
-                            filterInvoices();
-                        });
-
-                        filterOptions.addEventListener('change', filterInvoices);
-
-                        function filterInvoices() {
-                            const searchText = searchInput.value.toLowerCase();
-                            const filterValue = filterOptions.value;
-                            const currentDate = new Date();
-
-                            invoiceRows.forEach(row => {
-                                const invoiceNumber = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                                const invoiceDate = new Date(row.querySelector('td:nth-child(3) span').textContent);
-                                let showRow = true;
-
-                                // Filter by search text
-                                if (searchText && !invoiceNumber.includes(searchText)) {
-                                    showRow = false;
-                                }
-
-                                // Filter by date
-                                if (filterValue !== 'all') {
-                                    const timeDifference = currentDate - invoiceDate;
-                                    const daysDifference = timeDifference / (1000 * 3600 * 24);
-
-                                    if (filterValue === 'week' && daysDifference > 7) {
-                                        showRow = false;
-                                    } else if (filterValue === 'month' && daysDifference > 30) {
-                                        showRow = false;
-                                    } else if (filterValue === 'three-months' && daysDifference > 90) {
-                                        showRow = false;
-                                    }
-                                }
-
-                                // Show or hide the row
-                                if (showRow) {
-                                    row.style.display = '';
-                                } else {
-                                    row.style.display = 'none';
-                                }
+                        if (searchInput) {
+                            searchInput.addEventListener('input', function () {
+                                const q = this.value.toLowerCase();
+                                document.querySelectorAll('tbody tr').forEach(function (row) {
+                                    const cell = row.querySelector('td:nth-child(2)');
+                                    if (cell) row.style.display = cell.textContent.toLowerCase().includes(q) ? '' : 'none';
+                                });
                             });
                         }
                     });
@@ -152,6 +136,9 @@
                                                     <div class="text-center">Detail</div>
                                                 </th>
                                                 <th class="cell">
+                                                    <div class="text-center">Surat Jalan</div>
+                                                </th>
+                                                <th class="cell">
                                                     <div class="text-center">Aksi</div>
                                                 </th>
                                             </tr>
@@ -169,6 +156,13 @@
                                                     <td class="cell">
                                                         <a class="btn btn-sm btn-outline-primary px-3" style="border-radius:20px;font-size:.8rem;font-weight:600;" data-bs-toggle="modal"
                                                             data-bs-target="#invoiceModal-{{ $invoice->id }}"><i class="fas fa-eye me-1"></i>Lihat</a>
+                                                    </td>
+                                                    <td class="cell">
+                                                        <a href="{{ route('invoiceOut.print', $invoice->id) }}" target="_blank"
+                                                            class="btn btn-sm btn-outline-secondary px-3"
+                                                            style="border-radius:20px;font-size:.8rem;font-weight:600;">
+                                                            <i class="fas fa-print me-1"></i>Cetak
+                                                        </a>
                                                     </td>
                                                     <td class="cell">
                                                         <form id="deleteForm{{ $invoice->id }}"
@@ -323,6 +317,11 @@
                                                     </div>
                                                     {{-- Footer --}}
                                                     <div class="modal-footer border-0 pt-0 px-4 pb-3">
+                                                        <a href="{{ route('invoiceOut.print', $invoice->id) }}" target="_blank"
+                                                            class="btn btn-warning text-white"
+                                                            style="border-radius:8px;padding:.5rem 1.5rem;font-weight:600;">
+                                                            <i class="fas fa-print me-1"></i> Cetak Surat Jalan
+                                                        </a>
                                                         <button type="button" class="btn btn-outline-secondary"
                                                             style="border-radius:8px;padding:.5rem 1.5rem;font-weight:600;"
                                                             data-bs-dismiss="modal">

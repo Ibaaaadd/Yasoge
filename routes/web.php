@@ -32,7 +32,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::delete('/invoicein/{id}', [InvoiceInController::class, 'destroy'])->name('invoiceIn.destroy');
 
     Route::get('/invoiceout', [InvoiceOutController::class, 'index'])->name('invoiceOut.index');
+    Route::get('/invoiceout/export', [InvoiceOutController::class, 'export'])->name('invoiceOut.export');
     Route::get('/invoiceout/create', [InvoiceOutController::class, 'create'])->name('invoiceOut.create');
+    Route::get('/invoiceout/{id}/print', [InvoiceOutController::class, 'printSuratJalan'])->name('invoiceOut.print');
     Route::post('/invoiceout', [InvoiceOutController::class, 'store'])->name('invoiceOut.store');
     Route::get('/invoiceout/{id}/edit', [InvoiceOutController::class, 'edit'])->name('invoiceOut.edit');
     Route::put('/invoiceout/{id}', [InvoiceOutController::class, 'update'])->name('invoiceOut.update');
