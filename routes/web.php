@@ -23,7 +23,9 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::get('/invoicein', [InvoiceInController::class, 'index'])->name('invoiceIn.index');
+    Route::get('/invoicein/export', [InvoiceInController::class, 'export'])->name('invoiceIn.export');
     Route::get('/invoicein/create', [InvoiceInController::class, 'create'])->name('invoiceIn.create');
+    Route::get('/invoicein/{id}/print', [InvoiceInController::class, 'printSuratJalan'])->name('invoiceIn.print');
     Route::get('/invoicein/{id}/edit', [InvoiceInController::class, 'edit'])->name('invoiceIn.edit');
     Route::post('/invoicein', [InvoiceInController::class, 'store'])->name('invoiceIn.store');
     Route::put('/invoicein/{id}', [InvoiceInController::class, 'update'])->name('invoiceIn.update');
