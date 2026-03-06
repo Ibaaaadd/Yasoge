@@ -38,27 +38,27 @@
                     <div class="app-card shadow-sm mb-3">
                         <div class="app-card-body p-3">
                             <div class="row g-2 align-items-end">
-                                <div class="col-auto">
+                                <div class="col-12 col-sm-auto">
                                     <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#555;">
                                         <i class="fas fa-search me-1"></i> Cari
                                     </label>
-                                    <input type="text" id="search-orders" class="form-control form-control-sm" placeholder="ID Invoice..." style="min-width:160px;">
+                                    <input type="text" id="search-orders" class="form-control form-control-sm w-100" placeholder="ID Invoice..." style="min-width:160px;">
                                 </div>
-                                <div class="col-auto">
+                                <div class="col-12 col-sm-auto">
                                     <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#555;">
                                         <i class="fas fa-calendar me-1"></i> Dari Tanggal
                                     </label>
-                                    <input type="date" name="date_from" id="date_from" class="form-control form-control-sm"
+                                    <input type="date" name="date_from" id="date_from" class="form-control form-control-sm w-100"
                                         value="{{ $dateFrom ?? '' }}">
                                 </div>
-                                <div class="col-auto">
+                                <div class="col-12 col-sm-auto">
                                     <label class="form-label mb-1" style="font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#555;">
                                         <i class="fas fa-calendar me-1"></i> Sampai Tanggal
                                     </label>
-                                    <input type="date" name="date_to" id="date_to" class="form-control form-control-sm"
+                                    <input type="date" name="date_to" id="date_to" class="form-control form-control-sm w-100"
                                         value="{{ $dateTo ?? '' }}">
                                 </div>
-                                <div class="col-auto d-flex gap-2">
+                                <div class="col-12 col-sm-auto d-flex gap-2 flex-wrap">
                                     <button type="submit" class="btn btn-sm btn-primary px-3" style="font-weight:600;">
                                         <i class="fas fa-filter me-1"></i> Filter
                                     </button>
@@ -123,22 +123,22 @@
                                     <table id="table" class="table inv-tbl mb-0">
                                         <thead>
                                             <tr>
-                                                <th class="cell">
+                                                <th class="cell text-center">
                                                     <div class="" style="text-align:center">No</div>
                                                 </th>
-                                                <th class="cell">
+                                                <th class="cell text-center">
                                                     <div class="">ID Invoice</div>
                                                 </th>
-                                                <th class="cell">
+                                                <th class="cell text-center">
                                                     <div class="text-center">Tanggal</div>
                                                 </th>
-                                                <th class="cell">
+                                                <th class="cell text-center">
                                                     <div class="text-center">Subtotal</div>
                                                 </th>
-                                                <th class="cell">
+                                                <th class="cell text-center">
                                                     <div class="text-center">Detail</div>
                                                 </th>
-                                                <th class="cell">
+                                                <th class="cell text-center">
                                                     <div class="text-center">Aksi</div>
                                                 </th>
                                             </tr>

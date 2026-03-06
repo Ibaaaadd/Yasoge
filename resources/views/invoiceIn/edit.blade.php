@@ -58,6 +58,22 @@
     .btn-save-inv:hover { background: linear-gradient(135deg, #0e4a97, #1a68d1); transform: translateY(-1px);
         box-shadow: 0 4px 14px rgba(44,123,229,.4); color: white; }
     .btn-back-inv { border-radius: 8px; padding: .7rem 1.4rem; font-size: .93rem; font-weight: 600; }
+    @media(max-width:575px) {
+        .inv-header-card { padding: 1rem 1.1rem; }
+        .inv-header-card h4 { font-size: 1rem; }
+        .inv-form-body { padding: 1rem; }
+        .inv-table thead { display: none; }
+        .inv-table, .inv-table tbody, .inv-table tr, .inv-table td { display: block; width: 100%; }
+        .inv-table tbody tr.item-row { border: 1.5px solid #d3e4fb; border-radius: 10px; padding: .75rem .75rem 2.5rem; margin-bottom: 1rem; background: #fff; position: relative; }
+        .inv-table tbody td { padding: .35rem 0; border: none !important; text-align: left !important; }
+        .inv-table tbody td[data-label]::before { content: attr(data-label); font-size:.68rem; font-weight:700; text-transform:uppercase; color:#6c757d; display:block; margin-bottom:.25rem; }
+        .inv-table tbody td:last-child { position: absolute; bottom: .6rem; right: .75rem; width: auto; padding: 0; }
+        .qty-wrap { margin: 0; }
+        .harga-field { max-width: 100%; }
+        .total-card .amt { font-size: 1.4rem; }
+        .btn-save-inv, .btn-back-inv { padding: .6rem 1.1rem; font-size: .88rem; }
+        .inv-table-wrap { border-radius: 10px; overflow: visible; }
+    }
 </style>
 
     <div class="app-content pt-3 p-md-3 p-lg-4">
@@ -118,7 +134,7 @@
                                         <tbody id="items-container">
                                             @foreach ($invoiceIn->items as $index => $item)
                                                 <tr class="item-row">
-                                                    <td>
+                                                    <td data-label="Sepatu">
                                                         <select name="items[{{ $index }}][sepatu_id]"
                                                             class="form-control inv-control sepatu-select" required>
                                                             <option value="">Pilih item...</option>
@@ -131,7 +147,7 @@
                                                             @endforeach
                                                         </select>
                                                     </td>
-                                                    <td>
+                                                    <td data-label="Jumlah">
                                                         <div class="qty-wrap mx-auto">
                                                             <button class="qty-btn" type="button" onclick="changeQuantity(this, -1)">
                                                                 <i class="fas fa-minus" style="font-size:.65rem;"></i>
@@ -145,7 +161,7 @@
                                                             </button>
                                                         </div>
                                                     </td>
-                                                    <td>
+                                                    <td data-label="Harga (Rp)">
                                                         <input type="number" name="items[{{ $index }}][harga]"
                                                             class="harga-field harga-input" required
                                                             value="{{ $item->harga }}" placeholder="0" readonly />
@@ -272,17 +288,17 @@
             const row = document.createElement('tr');
             row.classList.add('item-row');
             row.innerHTML = `
-                <td>
+                <td data-label="Sepatu">
                     <select name="items[${idx}][sepatu_id]" class="form-control inv-control sepatu-select" required></select>
                 </td>
-                <td>
+                <td data-label="Jumlah">
                     <div class="qty-wrap mx-auto">
                         <button class="qty-btn" type="button" onclick="changeQuantity(this,-1)"><i class="fas fa-minus" style="font-size:.65rem;"></i></button>
                         <input type="number" name="items[${idx}][jumlah]" class="jumlah-input" min="1" value="1" required oninput="updatePrice(this)" />
                         <button class="qty-btn" type="button" onclick="changeQuantity(this,1)"><i class="fas fa-plus" style="font-size:.65rem;"></i></button>
                     </div>
                 </td>
-                <td>
+                <td data-label="Harga (Rp)">
                     <input type="number" name="items[${idx}][harga]" class="harga-field harga-input" required placeholder="0" readonly />
                 </td>
                 <td class="text-center">

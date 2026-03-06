@@ -251,7 +251,7 @@
     <div class="app-wrapper">
         @yield('content')
         <footer class="app-footer">
-            <div class="container text-center py-3 mt-5">
+            <div class="container text-center py-3">
                 <small class="copyright">Created
                     <img src="{{ asset('logo/Yasoge.png') }}" alt="Yasoge logo"
                         style="width: 20px; height: auto; color: #fb866a;">
