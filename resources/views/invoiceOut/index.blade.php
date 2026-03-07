@@ -33,7 +33,6 @@
                     </div>
                 </div>
 
-                {{-- ── Filter & Export Bar ── --}}
                 <form method="GET" action="{{ route('invoiceOut.index') }}" id="filter-form">
                     <div class="app-card shadow-sm mb-3">
                         <div class="app-card-body p-3">
@@ -257,7 +256,6 @@
                                             <div class="modal-dialog modal-lg modal-dialog-centered">
                                                 <div class="modal-content"
                                                     style="border-radius:14px;overflow:hidden;border:none;box-shadow:0 10px 40px rgba(0,0,0,.15);">
-                                                    {{-- Styled Header --}}
                                                     <div class="inv-modal-header-out">
                                                         <div class="d-flex justify-content-between align-items-start">
                                                             <div>
@@ -279,7 +277,6 @@
                                                                 data-bs-dismiss="modal" aria-label="Close"></button>
                                                         </div>
                                                     </div>
-                                                    {{-- Body --}}
                                                     <div class="modal-body p-3 p-md-4">
                                                         <div class="table-responsive">
                                                             <table class="table inv-modal-tbl-out mb-0">
@@ -310,26 +307,20 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    {{-- Footer --}}
                                                     <div class="modal-footer border-0 pt-0 px-4 pb-3">
                                                         <a href="{{ route('invoiceOut.print', $invoice->id) }}" target="_blank"
-                                                            class="btn btn-warning text-white"
+                                                            class="btn btn-sm btn-secondary"
                                                             style="border-radius:8px;padding:.5rem 1.5rem;font-weight:600;">
                                                             <i class="fas fa-print me-1"></i> Cetak Surat Jalan
                                                         </a>
-                                                        <button type="button" class="btn btn-outline-secondary"
-                                                            style="border-radius:8px;padding:.5rem 1.5rem;font-weight:600;"
-                                                            data-bs-dismiss="modal">
-                                                            <i class="fas fa-times me-1"></i> Tutup
-                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     @endforeach
-                                </div><!--//table-responsive-->
-                            </div><!--//app-card-body-->
-                        </div><!--//app-card-->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
